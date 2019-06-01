@@ -1,0 +1,146 @@
+.el-button {
+  padding: 0 15px 0 15px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 13px;
+  position: relative;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  span {
+    font-size: 13px;
+  }
+}
+.el-button--text {
+  padding: 0;
+  margin-right: 0;
+}
+.btn-bgwhate {
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  color: #606266;
+  &:hover {
+    border-color: #c6e2ff;
+    background-color: #ecf5ff;
+  }
+  &:active {
+    border-color: #c6e2ff;
+    background-color: #ecf5ff;
+  }
+  &:focus {
+    border-color: #c6e2ff;
+    background-color: #ecf5ff;
+  }
+}
+
+.btn-bgblue {
+  background: #00a3ef;
+  border-color: #00a3ef;
+  color: #fff;
+  &:visited {
+    border-color: #00a3ef;
+    background-color: #00a3ef;
+  }
+  &:hover {
+    background: #66b1ff;
+    border-color: #66b1ff;
+    color: #fff;
+  }
+  &:focus {
+    border-color: #00a3ef;
+    background-color: #00a3ef;
+  }
+  &:active {
+    border-color: #00a3ef;
+    background-color: #00a3ef;
+  }
+  &:disabled {
+    background: rgba(0, 163, 239, 0.4);
+    &:hover {
+      background: rgba(0, 163, 239, 0.4);
+    }
+  }
+}
+.btn-bggray {
+  background: #929eaa;
+  color: #fff;
+  border: 1px solid #929eaa;
+  &:hover {
+    background: #a6a9ad;
+    border-color: #a6a9ad;
+    color: #fff;
+  }
+  &:active {
+    color: #929eaa;
+    border-color: #929eaa;
+  }
+  &:focus {
+    color: #929eaa;
+    border-color: #929eaa;
+    background: #a6a9ad;
+  }
+}
+.btn-smallbutton {
+  height: 30px;
+  margin-bottom: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  width: auto;
+  min-width: 63.5px;
+}
+
+.btn-tab {
+  border-radius: 5px 5px 0 0;
+  border-bottom: 0 solid transparent;
+  outline: none;
+  height: 35px;
+  position: relative;
+  top: -1px;
+}
+.btn-tabactive {
+  color: #00a3ef;
+  top: 1px;
+}
+.btn-nopadding {
+  padding: 0px;
+  background: transparent;
+  outline: none;
+  border: 1px solid transparent;
+  color: #409eff;
+  &:hover {
+    background: transparent;
+    border: 1px solid transparent;
+  }
+}
+
+.but3 span {
+  color: #409eff;
+}
+
+html body .but2 {
+  // border-color: #DDDEE1;
+  width: auto;
+}
+
+html body .blue span {
+  color: #fff;
+}
+
+html body .gray span {
+  color: #fff;
+}
+
+html body .but3 span {
+  color: #409eff;
+}
+
+.btn-tab:active {
+  color: #1d90e6;
+  border-color: #dddee1;
+  outline: 0;
+}
+
+.btn-tab:focus,
+.btn-tab:hover {
+  color: #20a0ff;
+  // border-color: #DDDEE1;
+}

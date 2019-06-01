@@ -1,0 +1,19 @@
+.is-uploading {
+  .el-progress {
+    width: 80% !important;
+    .el-progress-circle {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .el-progress__text {
+      font-size: 10px !important;
+    }
+  }
+}
+
+.el-icon-close-tip {
+  visibility: hidden;
+}
+.el-upload-list__item {
+  transition: none;
+}

@@ -1,0 +1,66 @@
+.no-header {
+  .el-dialog__header {
+    visibility: hidden;
+    padding: 0
+  }
+}
+
+.el-dialog__header {
+  padding: 5px;
+  background-color: #00a3ef;
+  border: 1px solid #00a3ef;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-size: 13px
+}
+
+.el-dialog {
+  border-radius: 5px;
+}
+
+.el-dialog__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.el-dialog__body {
+  padding: 5px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.el-dialog__headerbtn {
+  top: 5px;
+  right: 5px;
+}
+
+.el-dialog__close {
+  font-size: 28px;
+  color: #fff;
+}
+
+.el-dialog__headerbtn .el-dialog__close,
+.el-dialog__headerbtn:focus .el-dialog__close,
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: #fff;
+}
+
+.el-dialog__footer {
+  padding: 5px;
+  background-color: #f9f9f9;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: 1px solid #e4e5e7;
+  .el-button {
+    margin-bottom: 0;
+  }
+  font-size:13px
+}
+
+.el-dialog .el-form .el-form-item .el-form-item__content {
+  font-size: 13px;
+  .el-autocomplete {
+    width: 100%;
+  }
+}
