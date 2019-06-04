@@ -14,6 +14,7 @@ import MkSearchBox from './lib/mk-search-box/index.vue';
 import MkSearchButtons from './lib/mk-search-buttons/index.vue';
 import MkTable from './lib/mk-table/index.vue';
 import MkTabs from './lib/mk-tabs/index.vue';
+import MkDialog from './lib/mk-dialog/index.vue';
 import MkUeditor_ from './lib/mk-ueditor/index.vue';
 import MkUpload_ from './lib/mk-upload/index.vue';
 import MkUpload2_ from './lib/mk-upload2/index.vue';
@@ -45,25 +46,7 @@ import MkVersion from './lib/helps/mk-version.js';
 
 import MkBase_ from './lib/mixins/mk-base.js';
 
-const components = [
-  Tag,
-  MkBottomBox,
-  MkButton,
-  MkImgView,
-  MkSearchBox,
-  MkTable,
-  MkSearchButtons,
-  MkConfigSelect,
-  MkHr,
-  MkConfigRadio,
-  MkCard,
-  MkFormItem,
-  MkInline,
-  MkRow,
-  MkTabs,
-  MkAuth,
-  MkLazyRender
-];
+const components = [Tag, MkBottomBox, MkButton, MkImgView, MkSearchBox, MkTable, MkSearchButtons, MkConfigSelect, MkHr, MkConfigRadio, MkCard, MkFormItem, MkInline, MkRow, MkTabs, MkAuth, MkLazyRender, MkDialog];
 
 const install = function(Vue, opts = {}) {
   components.forEach(component => {

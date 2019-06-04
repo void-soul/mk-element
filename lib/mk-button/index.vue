@@ -78,7 +78,7 @@ export default {
     confirmCancelText: { type: String, default: '取消' },
     confirmPlacement: { type: String, default: 'top' },
     padwidth: { type: Number, default: null },
-    gutter: { type: Number, default: 0 },
+    gutter: { type: Number, default: 4 },
     circle: { type: Boolean, default: false }
   },
   data() {

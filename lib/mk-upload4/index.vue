@@ -479,12 +479,12 @@ export default {
     // 选择文件?
     choose: {
       type: Boolean,
-      default: true
+      default: false
     },
     // 是否保存上传信息到资源表?
     saveRes: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
