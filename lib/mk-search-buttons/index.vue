@@ -1,15 +1,15 @@
 <template>
   <mk-inline>
     <template v-if="simply">
-      <mk-button :loading="value" :type="1" :size="0" icon="el-icon-refresh" @click="doSearch(true)">
+      <mk-button :loading="value" :type="link ? 4 : 1" :size="0" icon="el-icon-refresh" @click="doSearch(true)">
         刷新
       </mk-button>
     </template>
     <template v-else>
-      <mk-button :loading="value" :type="2" :size="0" icon="el-icon-search" @click="doSearch">
+      <mk-button :loading="value" :type="link ? 4 : 2" :size="0" icon="el-icon-search" @click="doSearch">
         筛选
       </mk-button>
-      <mk-button :loading="value" :type="1" :size="0" icon="el-icon-refresh" @click="doSearch(true)">
+      <mk-button :loading="value" :type="link ? 4 : 1" :size="0" icon="el-icon-refresh" @click="doSearch(true)">
         重置
       </mk-button>
     </template>
@@ -24,6 +24,10 @@ export default {
       default: false
     },
     simply: {
+      type: Boolean,
+      default: false
+    },
+    link: {
       type: Boolean,
       default: false
     }

@@ -1,38 +1,42 @@
 <template>
-  <el-select
-    v-model="value_"
-    :auto-complete="autoComplete"
-    :automatic-dropdown="automaticDropdown"
-    :size="size"
-    :disabled="disabled"
-    :clearable="clearable"
-    :filterable="filterable"
-    :allow-create="allowCreate"
-    :loading="loading"
-    :popper-class="popperClass"
-    :remote="remote"
-    :loading-text="loadingText"
-    :no-match-text="noMatchText"
-    :no-data-text="noDataText"
-    :remote-method="remoteMethod"
-    :filter-method="filterMethod"
-    :multiple="multiple"
-    :multiple-limit="multipleLimit"
-    :placeholder="placeholder"
-    :default-first-option="defaultFirstOption"
-    :reserve-keyword="reserveKeyword"
-    :value-key="valueKey"
-    :collapse-tags="collapseTags"
-    :popper-append-to-body="popperAppendToBody"
-    @change="change"
-    @visible-change="visibleChange"
-    @remove-tag="removeTag"
-    @clear="clear"
-    @blur="blur"
-    @focus="focus"
-  >
-    <el-option v-if="mkEmpty" :label="mkEmptyLabel" :value="mkEmptyValue" />
-    <el-option v-for="item in list" :key="item[0]" :label="item[1]" :value="item[0]" :disabled="_disable(item[0])" />
+  <el-select v-model="value_"
+             :auto-complete="autoComplete"
+             :automatic-dropdown="automaticDropdown"
+             :size="size"
+             :disabled="disabled"
+             :clearable="clearable"
+             :filterable="filterable"
+             :allow-create="allowCreate"
+             :loading="loading"
+             :popper-class="popperClass"
+             :remote="remote"
+             :loading-text="loadingText"
+             :no-match-text="noMatchText"
+             :no-data-text="noDataText"
+             :remote-method="remoteMethod"
+             :filter-method="filterMethod"
+             :multiple="multiple"
+             :multiple-limit="multipleLimit"
+             :placeholder="placeholder"
+             :default-first-option="defaultFirstOption"
+             :reserve-keyword="reserveKeyword"
+             :value-key="valueKey"
+             :collapse-tags="collapseTags"
+             :popper-append-to-body="popperAppendToBody"
+             @change="change"
+             @visible-change="visibleChange"
+             @remove-tag="removeTag"
+             @clear="clear"
+             @blur="blur"
+             @focus="focus">
+    <el-option v-if="mkEmpty"
+               :label="mkEmptyLabel"
+               :value="mkEmptyValue" />
+    <el-option v-for="item in list"
+               :key="item[0]"
+               :label="item[1]"
+               :value="item[0]"
+               :disabled="_disable(item[0])" />
   </el-select>
 </template>
 <script>
@@ -57,6 +61,8 @@ export default {
     mkEmptyLabel: { type: String, default: '全部' },
     // 未选择时的值
     mkEmptyValue: { type: String, default: '' },
+    // 多选时分隔符
+    mkSplit: { type: String, default: ',' },
 
     value: {
       type: [String, Number]
@@ -111,43 +117,62 @@ export default {
   computed: {
     list() {
       if (this.$store.state.config) {
-        return this.$store.state.config.GlobalArray[this.mkConfig].filter((item) => !this._hidden(item[0]) && this._filter(item[0]));
+        return this.$store.state.config.GlobalArray[this.mkConfig].filter(
+          (item) => !this._hidden(item[0]) && this._filter(item[0])
+        );
       } else {
         return [];
       }
     }
   },
   watch: {
-    value(vl) {
-      this.value_ = vl;
+    value: {
+      immediate: true,
+      handler(vl) {
+        if (this.multiple === true) {
+          this.value_ = vl ? vl.split(this.mkSplit) : [];
+        } else {
+          this.value_ = vl;
+        }
+      }
     }
   },
   mounted() {
     if (this.mkDisabled) {
-      this.disableds = this.mkDisabled.split(',');
+      this.disableds = this.mkDisabled.split(this.mkSplit);
     }
     if (this.mkHidden) {
-      this.hiddens = this.mkHidden.split(',');
+      this.hiddens = this.mkHidden.split(this.mkSplit);
     }
     if (this.mkFilter) {
-      this.filters = this.mkFilter.split(',');
+      this.filters = this.mkFilter.split(this.mkSplit);
     }
-    if (this.mkFirst === true && !this.value && this.$store.state.config.GlobalArray[this.mkConfig].length > 0) {
+    if (
+      this.mkFirst === true &&
+      !this.value &&
+      this.$store.state.config.GlobalArray[this.mkConfig].length > 0
+    ) {
       this.change(this.$store.state.config.GlobalArray[this.mkConfig][0][0]);
     }
     this.value_ = this.value;
   },
   methods: {
     change(v) {
-      const target = this.$store.state.config.GlobalArray[this.mkConfig].find((item) => item[0] === v);
+      const target = this.$store.state.config.GlobalArray[this.mkConfig].find(
+        (item) => item[0] === v
+      );
       if (target && target.length > 1) {
-        this.$emit('update:mkLabel', target[1]);
+        this.$emit('update:mkLabel', target.join(this.mkSplit));
       } else {
         this.$emit('update:mkLabel', '');
       }
-
-      this.$emit('input', v);
-      this.$emit('change', v);
+      if (this.multiple === true) {
+        this.$emit('input', (v || '').join(this.mkSplit));
+        this.$emit('change', (v || '').join(this.mkSplit));
+      } else {
+        this.$emit('input', v);
+        this.$emit('change', v);
+      }
     },
     visibleChange(v) {
       this.$emit('visible-change', v);

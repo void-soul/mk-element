@@ -8,10 +8,22 @@
        ref="box">
     <!-- 文件列表 -->
     <ul :class="chooseBoxCls">
-      <ul ref="list" v-if="showFileList" :class="chooseBoxCls">
-        <li v-for="(file, index) in uploadFiles" :class="['el-upload-list__item', 'is-success', 'focusing']" :style="fileStyle" :key="file.url">
-          <img class="el-upload-list__item-thumbnail" :ref="`file-${index}`" @load="$imgLoad($event, file)" :src="file.url" alt="" />
-          <label class="el-upload-list__item-status-label" v-if="file.checked === true">
+      <span v-if="fileTip && upShow && uploadDisabled !== true"
+            style="width: 100%;background-color: #fdf6ec;border-color: #faecd8;color: #e6a23c;line-height: 24px;font-size: 12px;padding: 5px;margin-bottom: 5px;">{{fileTip}}</span>
+      <ul ref="list"
+          v-if="showFileList"
+          :class="chooseBoxCls">
+        <li v-for="(file, index) in uploadFiles"
+            :class="['el-upload-list__item', 'is-success', 'focusing']"
+            :style="fileStyle"
+            :key="file.url">
+          <img class="el-upload-list__item-thumbnail"
+               :ref="`file-${index}`"
+               @load="$imgLoad($event, file)"
+               :src="file.url"
+               alt="" />
+          <label class="el-upload-list__item-status-label"
+                 v-if="file.checked === true">
             <i class="el-icon-upload-success el-icon-check" />
           </label>
           <el-progress v-if="file.status === 'uploading'"
@@ -20,72 +32,89 @@
                        text-inside
                        :percentage="parseInt(file.percentage, 10)">
           </el-progress>
-          <span class="el-upload-list__item-actions" :style="actionStyle">
-            <span class="el-upload-list__item-preview" v-if="uploadDisabled === false" @click="$handleRemove(file)">
+          <span class="el-upload-list__item-actions"
+                :style="actionStyle">
+            <span class="el-upload-list__item-preview"
+                  v-if="uploadDisabled === false"
+                  @click="$handleRemove(file)">
               <i class="el-icon-delete" />
             </span>
-            <span class="el-upload-list__item-preview" v-if="uploadDisabled === false" @click="$handleReplace(index)">
+            <span class="el-upload-list__item-preview"
+                  v-if="uploadDisabled === false"
+                  @click="$handleReplace(index)">
               <i class="el-icon-refresh" />
             </span>
-            <span class="el-upload-list__item-preview" @click="$handleView(file, index)">
+            <span class="el-upload-list__item-preview"
+                  @click="$handleView(file, index)">
               <i class="el-icon-caret-right" />
             </span>
           </span>
         </li>
       </ul>
       <!-- 文件上传或选择 -->
-      <li
-        @click="$addFile(true)"
-        v-show="upShow && uploadDisabled !== true"
-        :upShow="upShow"
-        :disabled="disabled"
-        :uploadDisabled="uploadDisabled"
-        :style="upStyle"
-        style="border: 1px dashed #c0ccda;"
-        class="el-upload-list__item is-success focusing menu"
-        :class="upCardCls"
-      >
+      <li @click="$addFile(true)"
+          v-show="upShow && uploadDisabled !== true"
+          :upShow="upShow"
+          :disabled="disabled"
+          :uploadDisabled="uploadDisabled"
+          :style="upStyle"
+          style="border: 1px dashed #c0ccda;"
+          class="el-upload-list__item is-success focusing menu"
+          :class="upCardCls">
         <slot>
           上传新文件
-          <i class="el-icon-plus" :style="actionStyle" />
+          <i class="el-icon-plus"
+             :style="actionStyle" />
         </slot>
       </li>
       <!-- 文件强制上传 -->
     </ul>
     <!-- 文件预览 -->
+
+    <viewer :images="uploadFiles"
+            @inited="initedViewer"
+            :options="viewOptions"
+            v-if="type === 'IMAGE' || type === 'GOMEZ'"
+            class="viewer"
+            ref="viewer">
+      <template slot-scope="scope">
+        <img v-for="(img, index) in scope.images"
+             :src="img.url"
+             style="display:none"
+             :key="index">
+        {{scope.options}}
+      </template>
+    </viewer>
+    <viewer :images="officeImage"
+            :options="viewOptions"
+            @inited="initedViewer"
+            v-else-if="type === 'OFFICE'"
+            class="viewer"
+            ref="viewer">
+      <template slot-scope="scope">
+        <img v-for="(img, index) in scope.images"
+             :src="img.fileurl"
+             style="display:none"
+             :key="index">
+        {{scope.options}}
+      </template>
+    </viewer>
+
     <mk-dialog visible
                mk-no-header
-               v-if="(type === 'IMAGE' || type === 'GOMEZ' || type === 'VIDEO' || type === 'OFFICE') && previewIng"
+               v-if="(type === 'VIDEO') && previewIng"
                append-to-body
                :width="`${preivewWidth}px`"
                :show-close="false"
                class="no-header"
                style="background-color:rgba(0,0,0,.5)"
                @close="$previewEnd">
-      <img width="100%"
-           v-if="type === 'IMAGE'"
-           :src="preivewSrc"
-           alt="">
-      <img width="100%"
-           v-if="type === 'GOMEZ'"
-           :src="preivewSrc"
-           alt="">
       <video tabindex="-1"
              v-if="type === 'VIDEO'"
              width="100%"
              preload="auto"
              controls
              :src="preivewSrc"></video>
-      <template v-if="type === 'OFFICE'">
-        <div v-for="(item,index) in officeImage"
-             :key="index">
-          <img width="100%"
-               v-if="type === 'OFFICE'"
-               v-bind:src="item.fileurl"
-               alt="">
-        </div>
-      </template>
-
     </mk-dialog>
     <!-- 音乐预览 -->
     <audio preload="auto"
@@ -245,7 +274,7 @@
                  :ref="file.rsid"
                  @load="$imgLoad($event,file)"
                  v-if="listType === 'card'"
-                 :src="type === 'IMAGE' ? file.url : accept[type].uri"
+                 :src="(type === 'IMAGE' || type === 'IMAGEVIDEO') ? file.url : accept[type].uri"
                  alt="">
 
             <span v-else>{{file.rsname}}</span>
@@ -300,22 +329,20 @@
         </el-pagination>
       </div>
     </el-dialog>
-    <!-- 资源编辑 -->
-    <res-form v-if="choose && chooseEditIng"
-              @close="$chooseEditFinish"
-              :folders="chooseFolders"
-              :item="chooseEditItem">
-    </res-form>
   </div>
 </template>
 <script>
-import VueCropper from 'vue-cropper'
-import ResForm from './res-form'
-import { UploaderBuilder } from './qiniu4js'
+import VueCropper from 'vue-cropper';
+import ResForm from './res-form';
+import { UploaderBuilder } from './qiniu4js';
 import Sortable from 'sortablejs';
-import accept from './accept'
-const status = 'success'
-const percentage = 100
+import 'viewerjs/dist/viewer.css';
+import Viewer from 'v-viewer';
+import accept from './accept';
+import Vue from 'vue';
+Vue.use(Viewer);
+const status = 'success';
+const percentage = 100;
 
 /**
  * emit
@@ -352,22 +379,22 @@ export default {
     // 上传路径
     action: {
       type: String,
-      default() {
-        return this.$store.state.uploadAction
+      default () {
+        return this.$store.state.uploadAction;
       }
     },
     // 查看base路径
     viewAction: {
       type: String,
-      default() {
-        return this.$store.state.viewAction
+      default () {
+        return this.$store.state.viewAction;
       }
     },
     // 上传令牌
     token: {
       type: String,
-      default() {
-        return this.$store.state.token
+      default () {
+        return this.$store.state.token;
       }
     },
     // 显示文件列表?
@@ -472,8 +499,8 @@ export default {
     // 宽度高度的比例,默认无比例，自由缩放
     cutFix: {
       type: Array,
-      default() {
-        return [0, 0]
+      default () {
+        return [0, 0];
       }
     },
     // 选择文件?
@@ -487,7 +514,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       // 挂载的文件列表
       uploadFiles: [],
@@ -547,89 +574,93 @@ export default {
       lockFolder: false,
       officePage: 0,
       officeImage: [],
-      realToken: null
-    }
+      realToken: null,
+      viewOptions: {
+        initialViewIndex: 0,
+        zIndex: 92015
+      }
+    };
   },
   computed: {
     // 自己禁用或者所属表单禁用
-    uploadDisabled() {
-      return this.disabled || (this.elForm || {}).disabled
+    uploadDisabled () {
+      return this.disabled || (this.elForm || {}).disabled;
     },
     // 只有自己设置为展示文件列表、同时是valueModel时
     // 才展示文件列表
-    showFileList() {
-      return this.valueModel === true && this.showList === true
+    showFileList () {
+      return this.valueModel === true && this.showList === true;
     },
     // 只有multiple时才支持多个文件
-    limitFile() {
-      return this.multiple === true ? this.limit : 1
+    limitFile () {
+      return this.multiple === true ? this.limit : 1;
     },
     // 文件上传提示
-    fileTip() {
-      if (this.tip) return this.tip
+    fileTip () {
+      if (this.tip) return this.tip;
       if (this.autoTip === true && this.choose === false) {
-        return `只能上传${this.accept[this.type].extensions.join(
+        return `只能上传${ this.accept[this.type].extensions.join(
           '/'
-        )}文件,且不能超过${this.size || this.accept[this.type].maxFileSize}M`
+        ) }文件,且不能超过${ this.size || this.accept[this.type].maxFileSize }M`;
       }
-      return ''
+      return '';
     },
     // 文件列表宽高
-    fileStyle() {
+    fileStyle () {
       return {
-        width: this.listType === 'card' ? `${this.width}px` : '',
-        height: this.listType === 'card' ? `${this.height}px` : ''
-      }
+        width: this.listType === 'card' ? `${ this.width }px` : '',
+        height: this.listType === 'card' ? `${ this.height }px` : ''
+      };
     },
     // 文件列表操作按钮字体大小
-    actionStyle() {
+    actionStyle () {
       return {
         fontSize:
           this.listType === 'card'
-            ? `${Math.max(Math.min(this.height / 5, this.width / 5), 10)}px`
+            ? `${ Math.max(Math.min(this.height / 5, this.width / 5), 10) }px`
             : ''
-      }
+      };
     },
     // 上传按钮样式
-    upStyle() {
+    upStyle () {
       return {
         width:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.width}px`
+            ? `${ this.width }px`
             : '',
         height:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.height}px`
+            ? `${ this.height }px`
             : '',
         lineHeight:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.height - 2}px`
+            ? `${ this.height - 2 }px`
             : ''
-      }
+      };
     },
     // 上传按钮的cls
-    upCardCls() {
+    upCardCls () {
       return {
         [`el-upload--${
           this.listType === 'text' ? 'text' : 'picture-card'
-        }`]: !this.$slots.default,
+          }`]: !this.$slots.default,
         'el-upload': !this.$slots.default
-      }
+      };
     },
     // 上传按钮是否显示
-    upShow() {
+    upShow () {
       return (
         isNaN(this.limitFile) ||
         this.limitFile === 0 ||
         this.limitFile > this.uploadFiles.length
-      )
+      );
     },
     // 显示类型,text/card
-    listType() {
-      return this.type === 'IMAGE' || this.type === 'GOMEZ' ? 'card' : 'text'
+    listType () {
+      return this.type === 'IMAGE' || this.type === 'IMAGEVIDEO' || this.type === 'GOMEZ' ? 'card' : 'text';
     },
     // 文件选择列表的样式
-    chooseBoxCls() {
+    chooseBoxCls () {
       return {
         'el-upload-list': true,
         'el-upload-list--picture-card': this.listType === 'card',
@@ -637,42 +668,45 @@ export default {
         'el-upload-list--text': this.listType === 'text',
         'el-choose-file-img': this.listType === 'card',
         'el-choose-file-text': this.listType === 'text'
-      }
+      };
     }
   },
   watch: {
     value: {
       immediate: true,
-      handler(vl) {
+      handler (vl) {
         // 非valueModel时，跳过操作
-        if (this.valueModel === false) return
+        if (this.valueModel === false) return;
         // this.uploadFiles = []
         if (vl) {
           // 非多选时，文件是一个字符串，这里强制转为数组
-          if (this.multiple === false) vl = [vl]
+          if (this.multiple === false) vl = [vl];
           const oldFiles = this.uploadFiles.filter(
-            (item) => typeof item === 'object' && item.status !== 'success' && vl.indexOf(item.url) === -1
-          )
-          let fileName = []
-          let count = 0
-          for(const url of vl){
+            (item) =>
+              typeof item === 'object' &&
+              item.status !== 'success' &&
+              vl.indexOf(item.url) === -1
+          );
+          let fileName = [];
+          let count = 0;
+          for (const url of vl) {
             if (url) {
-              const key = this.$genViewKey(url)
+              const key = this.$genViewKey(url);
               if (this.uploadFiles.findIndex((fl) => fl.key === key) === -1) {
                 // todo 通过key查询 cm_resource 得到rsname
                 // const { result } =  await this.$get('/cmResource/getName.json', {
                 //   uri: url
                 // })
-                if(this.uploadFiles.findIndex((fl) => fl.key === key) === -1){
+                if (this.uploadFiles.findIndex((fl) => fl.key === key) === -1) {
                   this.uploadFiles.push({
                     status,
                     key,
                     percentage,
                     url
                     // rsname: result
-                  })
+                  });
                   // fileName.push({ fileName: result, url: url })
-                  count++
+                  count++;
                   // if (vl.length === count) {
                   //   this.$emit('getFileName', fileName)
                   // }
@@ -680,14 +714,24 @@ export default {
               }
             }
           }
-          oldFiles.filter((item) => item.status !== 'success').forEach((item) => {
-            if(this.uploadFiles.findIndex((fl) => fl.key === item.key || fl.url === item.url) === -1){
-              this.uploadFiles.push(item)
-            }
-          })
+          oldFiles
+            .filter((item) => item.status !== 'success')
+            .forEach((item) => {
+              if (
+                this.uploadFiles.findIndex(
+                  (fl) => fl.key === item.key || fl.url === item.url
+                ) === -1
+              ) {
+                this.uploadFiles.push(item);
+              }
+            });
           const result2 = [];
-          this.uploadFiles.forEach(item => {
-            if(result2.findIndex((fl) => fl.key === item.key || fl.url === item.url) === -1){
+          this.uploadFiles.forEach((item) => {
+            if (
+              result2.findIndex(
+                (fl) => fl.key === item.key || fl.url === item.url
+              ) === -1
+            ) {
               result2.push(item);
             }
           });
@@ -697,45 +741,49 @@ export default {
     }
   },
   methods: {
-    async loadtoken() {
-      let data = await this.$get('/web-files/up-token.json')
-      let type = this.type
-      if (type === 'IMAGE') {
+    initedViewer (viewer) {
+      this.$viewer = viewer;
+    },
+    async loadtoken () {
+      let data = await this.$get('/web-files/up-token.json');
+      let type = this.type;
+      if (type === 'IMAGE' || type === 'IMAGEVIDEO') {
         this.realToken = data
-          ? [data.token, 'pro', 'sxmd', ''].join('|')
-          : this.realToken
+          ? [data.token, 'pro', this.$store.state.fileFolder, ''].join('|')
+          : this.realToken;
       } else {
         this.realToken = data
           ? [
-              data.token,
-              'pro',
-              'sxmd',
-              'https://jd.sxxxmd.com/api/web-files/up-info.json'
-            ].join('|')
-          : this.realToken
+            data.token,
+            'pro',
+            this.$store.state.fileFolder,
+            this.$store.state.noticeAction
+          ].join('|')
+          : this.realToken;
       }
     },
     // 生成查看路径
-    $genViewUrl(item) {
-      return `${this.viewAction}${item}?name=pro`
+    $genViewUrl (item) {
+      return `${ this.viewAction }${ item }?name=pro`;
     },
     // 解析key
-    $genViewKey(uri) {
-      const arr = uri.match(/key=([0-9a-zA-Z.]+)/)
+    $genViewKey (uri) {
+      const arr = uri.match(/key=([0-9a-zA-Z.]+)/);
       if (arr && arr.length === 2) {
-        return arr[1]
+        return arr[1];
       }
-      return uri
+      return uri;
     },
     // 生成随机key
-    $genKey() {
-      return Date.now() + this.tempIndex++
+    $genKey () {
+      return Date.now() + this.tempIndex++;
     },
     // 创建上传对象
-    $createUploader() {
-      if (this.choose === true) return
-      const maxSize = this.size || this.accept[this.type].maxFileSize
-      const cut = this.type === 'IMAGE' && this.cut === true
+    $createUploader () {
+      if (this.choose === true) return;
+      const maxSize = this.size || this.accept[this.type].maxFileSize;
+      console.error(this.type, maxSize);
+      const cut = (this.type === 'IMAGE' || this.type === 'IMAGEVIDEO') && this.cut === true;
       const uploader = new UploaderBuilder()
         .debug(this.debug)
         .domain({ http: this.action, https: this.action })
@@ -747,18 +795,17 @@ export default {
         .accept(this.accept[this.type].extensions)
         .tokenShare(true)
         .tokenFunc((setToken) => {
-          setToken(this.realToken)
+          setToken(this.realToken);
         })
-        // .tokenFunc(setToken =>   setToken([this.token,"pro", "college","http://127.0.0.1:3400/web-files/up-info.json"].join("|"))
         .interceptor({
           onIntercept: (task) => task.file.size > 1024 * 1024 * maxSize,
           onInterrupt: (task) => {
             if (task.file.size > 1024 * 1024 * maxSize) {
-              this.$message.error(`请上传小于${maxSize}m的文件`)
-              this.$clearFileInput()
-              return true
+              this.$message.error(`请上传小于${ maxSize }m的文件`);
+              this.$clearFileInput();
+              return true;
             }
-            return false
+            return false;
           }
         })
         .interceptor({
@@ -770,24 +817,24 @@ export default {
               this.accept[this.type].match.test(task.file.name) === false
             ) {
               this.$message.error(
-                `请上传后缀是${this.accept[this.type].extensions.join(
+                `请上传后缀是${ this.accept[this.type].extensions.join(
                   ' '
-                )}的文件`
-              )
-              this.$clearFileInput()
-              return true
+                ) }的文件`
+              );
+              this.$clearFileInput();
+              return true;
             }
-            return false
+            return false;
           }
         })
         .listener({
           onReady: (tasks) => {
             tasks.forEach((task) => {
-              task.file.key = this.$genKey()
+              task.file.key = this.$genKey();
               if (cut === true) {
-                this.cutTask = task
-                this.cutImage = URL.createObjectURL(task.file)
-                this.cutIng = true
+                this.cutTask = task;
+                this.cutImage = URL.createObjectURL(task.file);
+                this.cutIng = true;
               }
               // valueModel模式才做本地存贮
               if (this.valueModel === true) {
@@ -797,300 +844,306 @@ export default {
                   status: 'ready',
                   percentage: 0,
                   url:
-                    this.type === 'IMAGE' ? URL.createObjectURL(task.file) : ''
-                }
+                    this.type === 'IMAGE' || this.type === 'IMAGEVIDEO' ? URL.createObjectURL(task.file) : ''
+                };
                 if (this.replaceIndex === -1) {
-                  this.uploadFiles.push(tempFile)
+                  this.uploadFiles.push(tempFile);
                 } else {
-                  this.uploadFiles[this.replaceIndex] = tempFile
+                  this.uploadFiles[this.replaceIndex] = tempFile;
                 }
               }
-            })
+            });
           },
           // 开始上传
           onStart: (tasks) => {
             if (this.valueModel === false) {
-              this.uping = true
-              this.percentage = 0
+              this.uping = true;
+              this.percentage = 0;
             }
           },
           onTaskSuccess: (task) => {
-            const url = this.$genViewUrl(task.result.key)
+            const url = this.$genViewUrl(task.result.key);
             // valueModel模式才做本地存贮
             if (this.valueModel === true) {
               const file = this.uploadFiles.find(
                 (item) => item.key === task.file.key
-              )
+              );
               if (file) {
-                file.key = task.result.key
-                file.percentage = 100
-                file.status = 'success'
-                file.url = url
-                this.$input()
+                file.key = task.result.key;
+                file.percentage = 100;
+                file.status = 'success';
+                file.url = url;
+                this.$input();
                 this.$message({
-                  message: `${file.name}上传完毕`,
+                  message: `${ file.name }上传完毕`,
                   type: 'success'
                 });
               }
             } else {
-              this.uping = false
+              this.uping = false;
             }
-            this.$chooseUpSuc(url, task.file.name)
-            this.$emit('success', url, task.file.name)
-            this.$clearFileInput()
+            this.$chooseUpSuc(url, task.file.name);
+            this.$emit('success', url, task.file.name, task.result);
+            this.$clearFileInput();
           },
           onTaskProgress: (task) => {
             if (this.valueModel === true) {
               const file = this.uploadFiles.find(
                 (item) => item.key === task.file.key
-              )
-              if(file){
-                file.status = 'uploading'
-                file.percentage = task.progress || 0
+              );
+              if (file) {
+                file.status = 'uploading';
+                file.percentage = task.progress || 0;
               }
             } else {
-              this.percentage = task.progress || 0
+              this.percentage = task.progress || 0;
             }
           },
           onTaskFail: (task) => {
             if (this.valueModel === true) {
               const file = this.uploadFiles.find(
                 (item) => item.key === task.file.key
-              )
+              );
               const fileIndex = this.uploadFiles.findIndex(
                 (item) => item.key === task.file.key
-              )
-              file.status = 'fail'
-              this.uploadFiles.splice(fileIndex, 1)
+              );
+              file.status = 'fail';
+              this.uploadFiles.splice(fileIndex, 1);
             }
             this.$message({
               message: '上传失败',
               type: 'error'
-            })
-            this.$clearFileInput()
+            });
+            this.$clearFileInput();
           }
-        })
+        });
       if (this.compress !== 1) {
-        uploader.compress(this.compress)
+        uploader.compress(this.compress);
       }
       if (this.compressWidth > 0 || this.compressHeight > 0) {
-        uploader.scale([this.compressWidth, this.compressHeight])
+        uploader.scale([this.compressWidth, this.compressHeight]);
       }
-      this.uploaderHandel = uploader.build()
+      this.uploaderHandel = uploader.build();
     },
     // 右转
-    $cutRotateRight() {
-      this.$refs.cropper.rotateRight()
+    $cutRotateRight () {
+      this.$refs.cropper.rotateRight();
     },
     // 右转
-    $cutRotateLeft() {
-      this.$refs.cropper.rotateLeft()
+    $cutRotateLeft () {
+      this.$refs.cropper.rotateLeft();
     },
     // 剪切
-    $cut(ok) {
+    $cut (ok) {
       if (ok === true) {
-        const key = this.cutTask.file.key
+        const key = this.cutTask.file.key;
         this.$refs.cropper.getCropBlob((data) => {
-          this.cutTask.file = data
-          this.cutTask.file.key = key
+          this.cutTask.file = data;
+          this.cutTask.file.key = key;
           if (this.valueModel === true) {
-            const file = this.uploadFiles.find((item) => item.key === key)
-            file.url = URL.createObjectURL(data)
+            const file = this.uploadFiles.find((item) => item.key === key);
+            file.url = URL.createObjectURL(data);
           }
-          this.cutIng = false
+          this.cutIng = false;
           if (this.autoUpload === true) {
-            this.submit()
+            this.submit();
           }
-        })
+        });
       } else if (this.autoUpload === true) {
-        this.cutIng = false
-        this.submit()
+        this.cutIng = false;
+        this.submit();
       }
     },
     // 清空文件选择，方便重新选择同一个文件
-    $clearFileInput() {
-      this.uploaderHandel._fileInput.value = null
+    $clearFileInput () {
+      this.uploaderHandel._fileInput.value = null;
     },
     // 打开用户本地添加文件对话框
     // add= 是否是新增，否则是替换
-    async $addFile(add) {
+    async $addFile (add) {
       if (add === true) {
-        this.replaceIndex = -1
+        this.replaceIndex = -1;
       }
       if (!this.disabled) {
         if (this.choose === true) {
-          await this.$startChoose()
+          await this.$startChoose();
         } else {
-          await this.loadtoken()
-          this.uploaderHandel.chooseFile()
+          await this.loadtoken();
+          this.uploaderHandel.chooseFile();
         }
       }
     },
     // 处理移除文件
-    $handleRemove(raw) {
+    $handleRemove (raw) {
       const fileIndex = this.uploadFiles.findIndex(
         (item) => item.key === raw.key
-      )
-      const file = this.uploadFiles.find((item) => item.key === raw.key)
-      this.uploadFiles.splice(fileIndex, 1)
+      );
+      const file = this.uploadFiles.find((item) => item.key === raw.key);
+      this.uploadFiles.splice(fileIndex, 1);
       if (file.status === 'success') {
-        this.$input()
-        this.$emit('remove', file.url)
+        this.$input();
+        this.$emit('remove', file.url);
       }
-      this.previewPause = true
-      this.previewIng = false
-      this.preivewSrc = null
+      this.previewPause = true;
+      this.previewIng = false;
+      this.preivewSrc = null;
     },
     // 广播v-model改变
-    $input() {
+    $input () {
       if (this.valueModel === true) {
-        const result = []
-        const size = []
+        const result = [];
+        const size = [];
         this.uploadFiles.forEach((item) => {
           if (item.status === 'success') {
-            result.push(item.url)
+            result.push(item.url);
             if (item.width) {
               size.push({
                 width: item.width,
                 height: item.height
-              })
+              });
             } else {
-              let cache = this.$cache.get(item.key)
+              let cache = this.$cache.get(item.key);
               if (cache) {
-                size.push(JSON.parse(cache))
+                size.push(JSON.parse(cache));
               }
             }
           }
-        })
+        });
         if (this.multiple === true) {
-          this.$emit('input', result)
+          this.$emit('input', result);
         } else if (result.length > 0) {
-          this.$emit('input', result[0])
+          this.$emit('input', result[0]);
         } else {
-          this.$emit('input', null)
+          this.$emit('input', null);
         }
-        this.$emit('change', size)
+        this.$emit('change', size);
       }
     },
     // 替换图片
-    $handleReplace(index) {
-      this.replaceIndex = index
-      this.$addFile()
+    $handleReplace (index) {
+      this.replaceIndex = index;
+      this.$addFile();
     },
     // 结束预览
-    $previewEnd() {
-      this.previewPause = true
-      this.previewIng = false
-      this.preivewSrc = null
+    $previewEnd () {
+      this.previewPause = true;
+      this.previewIng = false;
+      this.preivewSrc = null;
     },
-    async getCmResource(uri) {
+    async getCmResource (uri) {
       const data = await this.$get('/cmResource/getPagenum.json', {
         uri: uri
-      })
+      });
       if (data && data.result > 0) {
-        this.officePage = data.result
-        let filepath = uri.substring(0, uri.length - 9) + '.files'
-        let tt = []
+        this.officePage = data.result;
+        let filepath = uri.substring(0, uri.length - 9) + '.files';
+        let tt = [];
         for (let i = 0; i < this.officePage; i++) {
-          let tem = {}
-          tem.fileurl = filepath + '/' + i + '.png?name=pro'
-          tt.push(tem)
+          let tem = {};
+          tem.fileurl = filepath + '/' + i + '.png?name=pro';
+          tt.push(tem);
         }
-        this.officeImage = tt
-        this.previewIng = true
-        this.preivewWidth = 800
+        this.officeImage = tt;
+        this.previewIng = true;
+        this.preivewWidth = 800;
+        this.$viewer.show();
       } else {
         this.$message({
           message: '文档正在转换中，请稍后预览',
           type: 'error'
-        })
+        });
       }
     },
-    async getVideo(uri) {
-      this.previewIng = true
-      this.preivewWidth = 800
-      let data = await this.$get('/web-files/up-token.json')
-      this.preivewSrc = `${uri}&token=${data.token}`
+    async getVideo (uri) {
+      this.previewIng = true;
+      this.preivewWidth = 800;
+      let data = await this.$get('/web-files/up-token.json');
+      this.preivewSrc = `${ uri }&token=${ data.token }`;
     },
     // 文件预览
-    $handleView(file, index) {
+    $handleView (file, index) {
       switch (this.type) {
         case 'OFFICE':
           // this.$message({
           //   message: '不支持预览文档',
           //   type: 'error'
           // })
-          this.getCmResource(file.url)
-          break
+          this.getCmResource(file.url);
+          break;
         case 'EFECT':
           this.$message({
             message: '不支持预览文档',
             type: 'error'
-          })
-          break
+          });
+          break;
         case 'VIDEO':
-          this.getVideo(file.url)
-          break
+          this.getVideo(file.url);
+          break;
         case 'GOMEZ':
         case 'IMAGE':
+        case 'IMAGEVIDEO':
           const img =
             index !== undefined
-              ? this.$refs[`file-${index}`]
-              : this.$refs[file.rsid]
+              ? this.$refs[`file-${ index }`]
+              : this.$refs[file.rsid];
           if (img && img[0]) {
-            this.preivewWidth = img[0].naturalWidth
+            this.preivewWidth = Math.max(img[0].naturalWidth, 1000);
           } else {
-            this.preivewWidth = this.cutWidth || this.accept[this.type].width
+            this.preivewWidth = this.cutWidth || this.accept[this.type].width;
           }
-          this.previewIng = true
-          this.preivewSrc = file.url
-          break
+          this.previewIng = true;
+          this.preivewSrc = file.url;
+          // this.viewOptions.initialViewIndex = index;
+          this.$viewer.show();
+          this.$viewer.view(index);
+          break;
         case 'VOICE':
-          this.previewIng = true
-          this.previewPause = false
-          this.preivewSrc = file.url
+          this.previewIng = true;
+          this.previewPause = false;
+          this.preivewSrc = file.url;
           this.$nextTick(() => {
-            this.$refs.audio.play()
-          })
-          break
+            this.$refs.audio.play();
+          });
+          break;
       }
     },
     // 暂停文件预览
-    $handleViewPause() {
+    $handleViewPause () {
       switch (this.type) {
         case 'OFFICE':
-          break
+          break;
         case 'EFECT':
-          break
+          break;
         case 'VIDEO':
         case 'GOMEZ':
         case 'IMAGE':
-          break
+        case 'IMAGEVIDEO':
+          break;
         case 'VOICE':
           if (this.$refs.audio) {
-            this.previewPause = true
-            this.$refs.audio.pause()
+            this.previewPause = true;
+            this.$refs.audio.pause();
           }
-          break
+          break;
       }
     },
     // 启动选择界面
-    async $startChoose() {
-      this.chooseIng = true
-      this.choosePage = 1
-      await this.$chooseLoading()
+    async $startChoose () {
+      this.chooseIng = true;
+      this.choosePage = 1;
+      await this.$chooseLoading();
     },
     // 关闭选择界面
-    $chooseEnd() {
-      this.chooseIng = false
-      this.previewPause = true
-      this.previewIng = false
-      this.preivewSrc = null
+    $chooseEnd () {
+      this.chooseIng = false;
+      this.previewPause = true;
+      this.previewIng = false;
+      this.preivewSrc = null;
     },
     // 选择文件界面 文件列表加载
-    async $chooseLoading() {
+    async $chooseLoading () {
       try {
-        this.chooseLoading = true
+        this.chooseLoading = true;
         const response = await this.$get('/query.json', {
           sqlCode: 'cmResource.select_list',
           currentPage: this.choosePage,
@@ -1099,91 +1152,95 @@ export default {
           sortName: 'createtime',
           sortType: 'desc',
           cfid: this.chooseFolder && this.chooseFolder.cfid
-        })
-        this.chooseRows = response.totalRow
+        });
+        this.chooseRows = response.totalRow;
         response.list.forEach((item) => {
-          item.key = this.$genViewKey(item.rsuri)
+          item.key = this.$genViewKey(item.rsuri);
           item.checked =
-            this.uploadFiles.findIndex((fl) => fl.key === item.key) > -1
-          item.url = item.rsuri
-          item.width = 0
-          item.height = 0
-        })
-        this.chooseFiles = response.list
+            this.uploadFiles.findIndex((fl) => fl.key === item.key) > -1;
+          item.url = item.rsuri;
+          item.width = 0;
+          item.height = 0;
+        });
+        this.chooseFiles = response.list;
       } catch (e) {
-        this.$message.error('加载失败')
+        this.$message.error('加载失败');
       } finally {
-        this.chooseLoading = false
+        this.chooseLoading = false;
       }
     },
     // 选择文件夹初始化 文件夹
-    async $initChooseFolders() {
+    async $initChooseFolders () {
       if (this.choose === true) {
-        const rstype = this.type
+        const rstype = this.type;
         const response = await this.$get('query.json', {
           sqlCode: 'cmResourceFolder.select_list',
           rstype,
           sortName: 'cfname',
           sortType: 'asc'
-        })
-        const fileFloders = response.list
-        const lockid = this.$cache.get(`${this.type}-lock-folder`)
+        });
+        const fileFloders = response.list;
+        const lockid = this.$cache.get(`${ this.type }-lock-folder`);
         if (lockid) {
-          this.lockFolder = true
+          this.lockFolder = true;
         }
         for (let item of fileFloders) {
           if (item.cfid === lockid) {
-            item.lock = true
-            this.chooseFolder = item
-            await this.$chooseLoading()
+            item.lock = true;
+            this.chooseFolder = item;
+            await this.$chooseLoading();
           } else {
-            item.lock = false
+            item.lock = false;
           }
         }
-        this.chooseFolders = fileFloders
+        this.chooseFolders = fileFloders;
       }
     },
     // 解除锁定
-    async $clearLock() {
+    async $clearLock () {
       this.chooseFolders.forEach((item) => {
-        item.lock = false
-      })
-      this.lockFolder = false
-      this.$cache.remove(`${this.type}-lock-folder`)
-      this.chooseFolder = null
-      this.choosePage = 1
-      await this.$chooseLoading()
+        item.lock = false;
+      });
+      this.lockFolder = false;
+      this.$cache.remove(`${ this.type }-lock-folder`);
+      this.chooseFolder = null;
+      this.choosePage = 1;
+      await this.$chooseLoading();
     },
     // 锁定与解锁
-    async $lockFolder(folder) {
-      folder.lock = !folder.lock
+    async $lockFolder (folder) {
+      folder.lock = !folder.lock;
       if (folder.lock === true) {
-        this.lockFolder = true
-        this.$cache.set(`${this.type}-lock-folder`, folder.cfid)
-        this.chooseFolder = folder
+        this.lockFolder = true;
+        this.$cache.set(`${ this.type }-lock-folder`, folder.cfid);
+        this.chooseFolder = folder;
       } else {
-        this.lockFolder = false
-        this.$cache.remove(`${this.type}-lock-folder`)
-        this.chooseFolder = null
+        this.lockFolder = false;
+        this.$cache.remove(`${ this.type }-lock-folder`);
+        this.chooseFolder = null;
       }
-      this.choosePage = 1
-      await this.$chooseLoading()
+      this.choosePage = 1;
+      await this.$chooseLoading();
     },
     // 选择文件页面尺寸改变
-    async $chooseSizeChange(vl) {
-      this.choosePageSize = vl
-      this.choosePage = 1
-      await this.$chooseLoading()
+    async $chooseSizeChange (vl) {
+      this.choosePageSize = vl;
+      this.choosePage = 1;
+      await this.$chooseLoading();
     },
     // 选择文件页码改变
-    async $choosePageChange(vl) {
-      this.choosePage = vl
-      await this.$chooseLoading()
+    async $choosePageChange (vl) {
+      this.choosePage = vl;
+      await this.$chooseLoading();
     },
     // 选择文件界面文件上传后需处理
     // 将文件key提交数据库
-    async $chooseUpSuc(rsuri, rsname) {
-      if (this.saveRes === true) {
+    async $chooseUpSuc (rsuri, rsname) {
+      if (
+        this.saveRes === true ||
+        this.type === 'VIDEO' ||
+        this.type === 'OFFICE'
+      ) {
         await this.$post('/cmResource/add.json', {
           cmResource: {
             rsname,
@@ -1193,27 +1250,27 @@ export default {
             paymoney: 0,
             cfid: this.chooseFolder && this.chooseFolder.cfid
           }
-        })
+        });
       }
       if (this.choose === true) {
-        this.choosePage = 1
-        await this.$chooseLoading()
+        this.choosePage = 1;
+        await this.$chooseLoading();
       }
     },
-    $chooseEdit(file) {
-      this.chooseEditItem = file
-      this.chooseEditIng = true
+    $chooseEdit (file) {
+      this.chooseEditItem = file;
+      this.chooseEditIng = true;
     },
     // 选择文件界面选中处理
-    async $choose(file) {
-      const index = this.uploadFiles.findIndex((fl) => fl.key === file.key)
+    async $choose (file) {
+      const index = this.uploadFiles.findIndex((fl) => fl.key === file.key);
       if (index === -1) {
         if (this.limit > 0 && this.uploadFiles.length === this.limit) {
           const lastChecked = this.chooseFiles.find(
             (item) => item.key === this.uploadFiles[0].key
-          )
-          lastChecked && (lastChecked.checked = false)
-          this.uploadFiles.splice(0, 1)
+          );
+          lastChecked && (lastChecked.checked = false);
+          this.uploadFiles.splice(0, 1);
         }
         this.uploadFiles.push({
           key: file.key,
@@ -1224,148 +1281,155 @@ export default {
           url: file.url,
           width: file.width,
           height: file.height
-        })
-        file.checked = true
-        this.$input()
-        this.$emit('success', file.rsuri, file.rsname)
+        });
+        file.checked = true;
+        this.$input();
+        this.$emit('success', file.rsuri, file.rsname);
         if (this.limit === 1) {
-          this.chooseIng = false
+          this.chooseIng = false;
         }
       } else {
-        file.checked = false
-        this.uploadFiles.splice(index, 1)
-        this.$input()
-        this.$emit('remove', file.rsuri)
+        file.checked = false;
+        this.uploadFiles.splice(index, 1);
+        this.$input();
+        this.$emit('remove', file.rsuri);
       }
     },
     // 选择文件中新增文件夹保存
-    async $chooseNewFolder(cancel) {
+    async $chooseNewFolder (cancel) {
       if (cancel !== false) {
-        let inputValue = this.chooseNewFolder
+        let inputValue = this.chooseNewFolder;
         if (inputValue) {
           if (inputValue.length > 16) {
-            this.$message.error('长度不能超过16个字')
-            return
+            this.$message.error('长度不能超过16个字');
+            return;
           }
-          this.chooseNewFolderIng = true
+          this.chooseNewFolderIng = true;
           try {
             const id = await this.$post(`/cmResourceFolder/add.json`, {
               cfname: inputValue,
               rstype: this.type
-            })
-            this.$cache.set(`${this.type}-lock-folder`, id.result)
-            await this.$initChooseFolders()
+            });
+            this.$cache.set(`${ this.type }-lock-folder`, id.result);
+            await this.$initChooseFolders();
           } catch (e) {
-            this.$message.error('保存发生错误：')
-            return
+            this.$message.error('保存发生错误：');
+            return;
           } finally {
-            this.chooseNewFolderIng = false
+            this.chooseNewFolderIng = false;
           }
         }
       }
-      this.chooseNewFolderVisible = false
-      this.chooseNewFolder = ''
+      this.chooseNewFolderVisible = false;
+      this.chooseNewFolder = '';
     },
     // 开始新建文件夹
-    $chooseNewFolderVisible() {
-      this.chooseNewFolderVisible = true
+    $chooseNewFolderVisible () {
+      this.chooseNewFolderVisible = true;
       this.$nextTick(() => {
-        this.$refs.chooseFolderInput.$refs.input.focus()
-      })
+        this.$refs.chooseFolderInput.$refs.input.focus();
+      });
     },
     // 资源编辑完成
-    $chooseEditFinish(reload) {
-      this.chooseEditIng = false
+    $chooseEditFinish (reload) {
+      this.chooseEditIng = false;
       if (reload === true) {
-        this.$chooseLoading()
+        this.$chooseLoading();
       }
     },
     // 删除
-    async $chooseDel(file) {
-      this.chooseDelIng = true
+    async $chooseDel (file) {
+      this.chooseDelIng = true;
       let data = await this.$delete('cmResource/deleteByid.json', {
         rsid: file.rsid
-      })
+      });
       if (data) {
-        await this.$chooseLoading()
+        await this.$chooseLoading();
       }
-      this.chooseDelIng = false
+      this.chooseDelIng = false;
     },
-    $imgLoad(event, file) {
-      file.width = event.target.naturalWidth
-      file.height = event.target.naturalHeight
+    $imgLoad (event, file) {
+      file.width = event.target.naturalWidth;
+      file.height = event.target.naturalHeight;
       this.$cache.set(file.key, {
         width: file.width,
         height: file.height
-      })
+      });
     },
     // 对外开放的：上传开始
-    submit() {
-      this.uploaderHandel.start()
+    submit () {
+      this.uploaderHandel.start();
     },
     // 对外开放的：获取文件的宽高
-    getSize() {
-      const result = []
+    getSize () {
+      const result = [];
       if (this.type === 'IMAGE') {
         this.uploadFiles.forEach((file, index) => {
-          const img = this.$refs[`file-${index}`]
+          const img = this.$refs[`file-${ index }`];
           if (img && img[0]) {
             result.push({
               width: img[0].naturalWidth,
               height: img[0].naturalHeight
-            })
+            });
           }
-        })
+        });
       }
-      return result
+      return result;
     },
     // 对外开放的：新增文件
-    addFile() {
-      this.$addFile(true)
+    addFile () {
+      this.$addFile(true);
     }
   },
-  async mounted() {
+  async mounted () {
     // await this.loadtoken()
-    this.$createUploader()
-    await this.$initChooseFolders()
+    this.$createUploader();
+    await this.$initChooseFolders();
     if (this.$refs.list) {
       const that = this;
       this.sortAble = new Sortable(this.$refs.list, {
         filter: '.menu',
-        onStart() {
+        onStart () {
           that.notDrag = false;
         },
-        onEnd({ oldIndex, newIndex }) {
-          that.uploadFiles.splice(newIndex, 0, ...that.uploadFiles.splice(oldIndex, 1));
+        onEnd ({ oldIndex, newIndex }) {
+          that.uploadFiles.splice(
+            newIndex,
+            0,
+            ...that.uploadFiles.splice(oldIndex, 1)
+          );
           that.$input();
           // that.notDrag = true;
         }
       });
     }
   },
-  beforeDestroy() {
+  beforeDestroy () {
     if (this.sortAble) {
       this.sortAble.destroy();
     }
+    if (this.$viewer) {
+      this.$viewer.destroy();
+    }
   },
-  created(){
+  created () {
     this.realToken = this.token;
   },
   components: {
     VueCropper,
     ResForm
   },
-  provide() {
+  provide () {
     return {
       uploader: this
-    }
+    };
   },
   inject: {
     elForm: {
       default: ''
     }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 .box {
@@ -1380,10 +1444,8 @@ export default {
   display: none;
 }
 .el-choose-file {
-  // float: left;
   display: flex;
   flex-wrap: wrap;
-  padding-left: 10px;
   align-items: flex-end;
   /deep/ .el-upload-list__item-actions {
     font-size: 15px;
@@ -1483,5 +1545,8 @@ export default {
   background: #fdfdfda2;
   text-align: center;
   border-radius: 6px 0 0 0;
+}
+.viewer {
+  display: none;
 }
 </style>

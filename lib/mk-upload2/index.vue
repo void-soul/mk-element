@@ -601,7 +601,7 @@ export default {
     // 宽度高度的比例,默认无比例，自由缩放
     cutFix: {
       type: Array,
-      default() {
+      default () {
         return [0, 0];
       }
     },
@@ -628,7 +628,7 @@ export default {
     // 自定义文件
     customList: {
       type: Array,
-      default() {
+      default () {
         return [];
       }
     },
@@ -650,7 +650,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       // 挂载的文件列表
       uploadFiles: [],
@@ -717,73 +717,73 @@ export default {
       tokenGlobal: 'token'
     }),
     // 自己禁用或者所属表单禁用
-    uploadDisabled() {
+    uploadDisabled () {
       return this.disabled || (this.elForm || {}).disabled;
     },
     // 只有自己设置为展示文件列表、同时是valueModel时
     // 才展示文件列表
-    showFileList() {
+    showFileList () {
       return this.valueModel === true && this.showList === true;
     },
     // 只有multiple时才支持多个文件
-    limitFile() {
+    limitFile () {
       return this.multiple === true ? this.limit : 1;
     },
     // 文件上传提示
-    fileTip() {
+    fileTip () {
       if (this.tip) return this.tip;
       if (this.autoTip === true && this.choose === false) {
-        return `只能上传${this.accept[this.type].extensions.join(
+        return `只能上传${ this.accept[this.type].extensions.join(
           '/'
-        )}文件,且不能超过${this.size || this.accept[this.type].maxFileSize}M`;
+        ) }文件,且不能超过${ this.size || this.accept[this.type].maxFileSize }M`;
       }
       return '';
     },
     // 文件列表宽高
-    fileStyle() {
+    fileStyle () {
       return {
-        width: this.listType === 'card' ? `${this.width}px` : '',
-        height: this.listType === 'card' ? `${this.height}px` : ''
+        width: this.listType === 'card' ? `${ this.width }px` : '',
+        height: this.listType === 'card' ? `${ this.height }px` : ''
       };
     },
     // 文件列表操作按钮字体大小
-    actionStyle() {
+    actionStyle () {
       return {
         fontSize:
           this.listType === 'card'
-            ? `${Math.max(Math.min(this.height / 5, this.width / 5), 10)}px`
+            ? `${ Math.max(Math.min(this.height / 5, this.width / 5), 10) }px`
             : ''
       };
     },
     // 上传按钮样式
-    upStyle() {
+    upStyle () {
       return {
         width:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.width}px`
+            ? `${ this.width }px`
             : '',
         height:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.height}px`
+            ? `${ this.height }px`
             : '',
         lineHeight:
           !this.$slots.default && this.listType === 'card'
-            ? `${this.height - 2}px`
+            ? `${ this.height - 2 }px`
             : ''
       };
     },
     // 上传按钮的cls
-    upCardCls() {
+    upCardCls () {
       return {
         [`el-upload--${
           this.listType === 'text' ? 'text' : 'picture-card'
-        }`]: !this.$slots.default,
+          }`]: !this.$slots.default,
         'el-upload': !this.$slots.default,
         'el-upload--noheight': !!this.$slots.default
       };
     },
     // 上传按钮是否显示
-    upShow() {
+    upShow () {
       return (
         isNaN(this.limitFile) ||
         this.limitFile === 0 ||
@@ -791,11 +791,11 @@ export default {
       );
     },
     // 显示类型,text/card
-    listType() {
+    listType () {
       return this.type === 'IMAGE' || this.type === 'GOMEZ' ? 'card' : 'text';
     },
     // 文件选择列表的样式
-    chooseBoxCls() {
+    chooseBoxCls () {
       return {
         'el-upload-list': true,
         'el-upload-list--picture-card': this.listType === 'card',
@@ -805,7 +805,7 @@ export default {
         'el-choose-file-text': this.listType === 'text'
       };
     },
-    customFiles() {
+    customFiles () {
       return this.customList.map(file => {
         const item = {};
         item.key = this.$genViewKey(file);
@@ -821,7 +821,7 @@ export default {
   watch: {
     value: {
       immediate: true,
-      handler(vl) {
+      handler (vl) {
         // 非valueModel时，跳过操作
         if (this.valueModel === false) return;
         if (vl) {
@@ -851,12 +851,12 @@ export default {
   },
   methods: {
     // 生成查看路径
-    $genViewUrl(item) {
-      return `${this.viewAction}?key=${item}&token=${this.token ||
-        this.tokenGlobal}`;
+    $genViewUrl (item) {
+      return `${ this.viewAction }?key=${ item }&token=${ this.token ||
+        this.tokenGlobal }`;
     },
     // 解析key
-    $genViewKey(uri) {
+    $genViewKey (uri) {
       const arr = uri.match(/key=([0-9a-zA-Z.]+)/);
       if (arr && arr.length === 2) {
         return arr[1];
@@ -864,11 +864,11 @@ export default {
       return uri;
     },
     // 生成随机key
-    $genKey() {
+    $genKey () {
       return Date.now() + this.tempIndex++;
     },
     // 创建上传对象
-    $createUploader() {
+    $createUploader () {
       if (this.choose === true && this.chooseAndUpload === false) return;
       const maxSize = this.size || this.accept[this.type].maxFileSize;
       const cut = this.type === 'IMAGE' && this.cut === true;
@@ -887,7 +887,7 @@ export default {
           onIntercept: task => task.file.size > 1024 * 1024 * maxSize,
           onInterrupt: task => {
             if (task.file.size > 1024 * 1024 * maxSize) {
-              this.$message.error(`请上传小于${maxSize}m的文件`);
+              this.$message.error(`请上传小于${ maxSize }m的文件`);
               this.$clearFileInput();
               return true;
             }
@@ -903,9 +903,9 @@ export default {
               this.accept[this.type].match.test(task.file.name) === false
             ) {
               this.$message.error(
-                `请上传后缀是${this.accept[this.type].extensions.join(
+                `请上传后缀是${ this.accept[this.type].extensions.join(
                   ' '
-                )}的文件`
+                ) }的文件`
               );
               this.$clearFileInput();
               return true;
@@ -965,7 +965,7 @@ export default {
               this.uping = false;
             }
             this.$chooseUpSuc(url, task.file.name);
-            this.$emit('success', url, task.file.name);
+            this.$emit('success', url, task.file.name, task.result);
             this.$clearFileInput();
           },
           onTaskProgress: task => {
@@ -1006,15 +1006,15 @@ export default {
       this.uploaderHandel = uploader.build();
     },
     // 右转
-    $cutRotateRight() {
+    $cutRotateRight () {
       this.$refs.cropper.rotateRight();
     },
     // 右转
-    $cutRotateLeft() {
+    $cutRotateLeft () {
       this.$refs.cropper.rotateLeft();
     },
     // 剪切
-    $cut(ok) {
+    $cut (ok) {
       if (ok === true) {
         const key = this.cutTask.file.key;
         this.$refs.cropper.getCropBlob(data => {
@@ -1035,14 +1035,14 @@ export default {
       }
     },
     // 清空文件选择，方便重新选择同一个文件
-    $clearFileInput() {
+    $clearFileInput () {
       this.uploaderHandel._fileInput.value = null;
     },
     // 打开用户本地添加文件对话框
     // add= 是否是新增，否则是替换
     // forceAdd= 强制上传，而不是有可能性的选择
     // 自定义选择?
-    async $addFile(add, forceAdd, customChoose) {
+    async $addFile (add, forceAdd, customChoose) {
       if (add === true) {
         this.replaceIndex = -1;
       }
@@ -1063,7 +1063,7 @@ export default {
       }
     },
     // 处理移除文件
-    $handleRemove(raw) {
+    $handleRemove (raw) {
       const fileIndex = this.uploadFiles.findIndex(
         item => item.key === raw.key
       );
@@ -1079,7 +1079,7 @@ export default {
       this.preivewIndex = -1;
     },
     // 广播v-model改变
-    $input() {
+    $input () {
       if (this.valueModel === true) {
         const result = [];
         const size = [];
@@ -1110,19 +1110,19 @@ export default {
       }
     },
     // 替换图片
-    $handleReplace(index) {
+    $handleReplace (index) {
       this.replaceIndex = index;
       this.$addFile();
     },
     // 结束预览
-    $previewEnd() {
+    $previewEnd () {
       this.previewPause = true;
       this.previewIng = false;
       this.preivewSrc = null;
       this.preivewIndex = -1;
     },
     // 文件预览
-    $handleView(file, index) {
+    $handleView (file, index) {
       switch (this.type) {
         case 'OFFICE':
           this.$message({
@@ -1141,7 +1141,7 @@ export default {
         case 'IMAGE':
           const img =
             index !== undefined
-              ? this.$refs[`file-${index}`]
+              ? this.$refs[`file-${ index }`]
               : this.$refs[file.rsid];
           if (img && img[0]) {
             this.preivewWidth = img[0].naturalWidth;
@@ -1163,31 +1163,31 @@ export default {
           break;
       }
     },
-    $lastPreview() {
+    $lastPreview () {
       this.$handleView(
         this.uploadFiles[this.preivewIndex - 1],
         this.preivewIndex - 1
       );
     },
-    $nextPreview() {
+    $nextPreview () {
       this.$handleView(
         this.uploadFiles[this.preivewIndex + 1],
         this.preivewIndex + 1
       );
     },
     // 启动选择界面
-    async $startChoose() {
+    async $startChoose () {
       this.chooseIng = true;
       this.choosePage = 1;
       await this.$initChooseFolders();
       await this.$chooseLoading();
     },
     // 启动选择界面
-    async $startChoose2() {
+    async $startChoose2 () {
       this.chooseIng2 = true;
     },
     // 关闭选择界面
-    $chooseEnd() {
+    $chooseEnd () {
       this.chooseIng = false;
       this.chooseIng2 = false;
       this.previewPause = true;
@@ -1196,7 +1196,7 @@ export default {
       this.preivewIndex = -1;
     },
     // 选择文件界面 文件列表加载
-    async $chooseLoading() {
+    async $chooseLoading () {
       try {
         this.chooseLoading = true;
         if (this.chooseFolders.length === 0) {
@@ -1229,7 +1229,7 @@ export default {
       }
     },
     // 选择文件夹初始化 文件夹
-    async $initChooseFolders() {
+    async $initChooseFolders () {
       if (this.choose === true) {
         const rstype = this.type;
         const response = await this.$get('query.json', {
@@ -1239,7 +1239,7 @@ export default {
           sortType: 'asc'
         });
         const fileFloders = response.list;
-        const lockid = this.$cache.get(`${this.type}-lock-folder`);
+        const lockid = this.$cache.get(`${ this.type }-lock-folder`);
         if (lockid) {
           this.lockFolder = true;
         }
@@ -1259,18 +1259,18 @@ export default {
       }
     },
     // 解除锁定
-    async $clearLock() {
+    async $clearLock () {
       this.chooseFolders.forEach(item => {
         item.lock = false;
       });
       this.lockFolder = false;
-      this.$cache.remove(`${this.type}-lock-folder`);
+      this.$cache.remove(`${ this.type }-lock-folder`);
       this.chooseFolder = {};
       this.choosePage = 1;
       await this.$chooseLoading();
     },
     // 锁定与解锁
-    async $lockFolder(folder) {
+    async $lockFolder (folder) {
       // this.$cache.set(`${this.type}-lock-folder`, folder.name)
       // this.chooseFolder = {
       //   cfid: folder.name
@@ -1278,30 +1278,30 @@ export default {
       folder.lock = !folder.lock;
       if (folder.lock === true) {
         this.lockFolder = true;
-        this.$cache.set(`${this.type}-lock-folder`, folder.cfid);
+        this.$cache.set(`${ this.type }-lock-folder`, folder.cfid);
         this.chooseFolder = folder;
       } else {
         this.lockFolder = false;
-        this.$cache.remove(`${this.type}-lock-folder`);
+        this.$cache.remove(`${ this.type }-lock-folder`);
         this.chooseFolder = {};
       }
       this.choosePage = 1;
       await this.$chooseLoading();
     },
     // 选择文件页面尺寸改变
-    async $chooseSizeChange(vl) {
+    async $chooseSizeChange (vl) {
       this.choosePageSize = vl;
       this.choosePage = 1;
       await this.$chooseLoading();
     },
     // 选择文件页码改变
-    async $choosePageChange(vl) {
+    async $choosePageChange (vl) {
       this.choosePage = vl;
       await this.$chooseLoading();
     },
     // 选择文件界面文件上传后需处理
     // 将文件key提交数据库
-    async $chooseUpSuc(rsuri, rsname) {
+    async $chooseUpSuc (rsuri, rsname) {
       if (this.saveRes === true) {
         await this.$post('/cmResource/add.json', {
           cmResource: {
@@ -1325,12 +1325,12 @@ export default {
         await this.$chooseLoading();
       }
     },
-    $chooseEdit(file) {
+    $chooseEdit (file) {
       this.chooseEditItem = file;
       this.chooseEditIng = true;
     },
     // 选择文件界面选中处理
-    $choose(file) {
+    $choose (file) {
       const index = this.uploadFiles.findIndex(fl => fl.key === file.key);
       if (index === -1) {
         if (this.limit > 0 && this.uploadFiles.length === this.limit) {
@@ -1363,7 +1363,7 @@ export default {
       }
     },
     // 选择文件中新增文件夹保存
-    async $chooseNewFolder(cancel) {
+    async $chooseNewFolder (cancel) {
       if (cancel !== false) {
         let inputValue = this.chooseNewFolder;
         if (inputValue) {
@@ -1377,7 +1377,7 @@ export default {
               cfname: inputValue,
               rstype: this.type
             });
-            this.$cache.set(`${this.type}-lock-folder`, id.result);
+            this.$cache.set(`${ this.type }-lock-folder`, id.result);
             await this.$initChooseFolders();
           } catch (e) {
             this.$message.error('保存发生错误：');
@@ -1391,21 +1391,21 @@ export default {
       this.chooseNewFolder = '';
     },
     // 开始新建文件夹
-    $chooseNewFolderVisible() {
+    $chooseNewFolderVisible () {
       this.chooseNewFolderVisible = true;
       this.$nextTick(() => {
         this.$refs.chooseFolderInput.$refs.input.focus();
       });
     },
     // 资源编辑完成
-    $chooseEditFinish(reload) {
+    $chooseEditFinish (reload) {
       this.chooseEditIng = false;
       if (reload === true) {
         this.$chooseLoading();
       }
     },
     // 删除
-    async $chooseDel(file) {
+    async $chooseDel (file) {
       this.chooseDelIng = true;
       let data = await this.$delete('cmResource/deleteByid.json', {
         rsid: file.rsid
@@ -1415,7 +1415,7 @@ export default {
       }
       this.chooseDelIng = false;
     },
-    $imgLoad(event, file) {
+    $imgLoad (event, file) {
       file.width = event.target.naturalWidth;
       file.height = event.target.naturalHeight;
       this.$cache.set(file.key, {
@@ -1424,15 +1424,15 @@ export default {
       });
     },
     // 对外开放的：上传开始
-    submit() {
+    submit () {
       this.uploaderHandel.start();
     },
     // 对外开放的：获取文件的宽高
-    getSize() {
+    getSize () {
       const result = [];
       if (this.type === 'IMAGE') {
         this.uploadFiles.forEach((file, index) => {
-          const img = this.$refs[`file-${index}`];
+          const img = this.$refs[`file-${ index }`];
           if (img && img[0]) {
             result.push({
               width: img[0].naturalWidth,
@@ -1444,10 +1444,10 @@ export default {
       return result;
     },
     // 对外开放的：新增文件
-    addFile() {
+    addFile () {
       this.$addFile(true);
     },
-    $left(index) {
+    $left (index) {
       if (index > 0) {
         this.uploadFiles.splice(
           index - 1,
@@ -1457,13 +1457,13 @@ export default {
         this.$input();
       }
     },
-    $$left(index) {
+    $$left (index) {
       if (index > 0) {
         this.uploadFiles.splice(0, 0, ...this.uploadFiles.splice(index, 1));
         this.$input();
       }
     },
-    $right(index) {
+    $right (index) {
       if (index < this.uploadFiles.length) {
         this.uploadFiles.splice(
           index + 1,
@@ -1473,7 +1473,7 @@ export default {
         this.$input();
       }
     },
-    $$right(index) {
+    $$right (index) {
       if (index < this.uploadFiles.length) {
         this.uploadFiles.splice(
           this.uploadFiles.length - 1,
@@ -1484,16 +1484,16 @@ export default {
       }
     }
   },
-  async mounted() {
+  async mounted () {
     this.$createUploader();
     if (this.$refs.list) {
       const that = this;
       this.sortAble = new Sortable(this.$refs.list, {
         filter: '.menu',
-        onStart() {
+        onStart () {
           that.notDrag = false;
         },
-        onEnd({ oldIndex, newIndex }) {
+        onEnd ({ oldIndex, newIndex }) {
           that.uploadFiles.splice(newIndex, 0, ...that.uploadFiles.splice(oldIndex, 1));
           that.$input();
         }
@@ -1505,7 +1505,7 @@ export default {
     VueCropper,
     ResForm
   },
-  provide() {
+  provide () {
     return {
       uploader: this
     };

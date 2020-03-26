@@ -28,7 +28,6 @@
   </el-dialog>
 </template>
 <script>
-import ElDialog from 'mk-element/packages/dialog';
 export default {
   name: 'mk-dialog',
   props: {
@@ -87,9 +86,6 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  components: {
-    ElDialog
   },
   methods: {
     closed() {

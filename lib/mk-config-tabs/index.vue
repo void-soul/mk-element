@@ -1,37 +1,8 @@
 <template>
-  <el-radio-group v-model="value_"
-                  :size="size"
-                  :disabled="disabled"
-                  :text-color="textColor"
-                  :fill="fill"
-                  @change="change">
-    <template v-if="mkIsButton">
-      <el-radio-button v-if="mkEmpty"
-                       :label="mkEmptyLabel"
-                       :value="mkEmptyValue" />
-      <el-radio-button v-for="item in list"
-                       :key="item[0]"
-                       :label="item[0]"
-                       :disabled="_disable(item[0])">
-        {{ item[1] }}
-      </el-radio-button>
-    </template>
-    <template v-else>
-      <el-radio v-if="mkEmpty"
-                :label="mkEmptyLabel"
-                :value="mkEmptyValue" />
-      <el-radio v-for="item in list"
-                :key="item[0]"
-                :label="item[0]"
-                :disabled="_disable(item[0])">
-        {{ item[1] }}
-      </el-radio>
-    </template>
-  </el-radio-group>
 </template>
 <script>
 export default {
-  name: 'mk-config-radio',
+  name: 'mk-config-tabs',
   props: {
     // data-config 名称,对应GlobalValues
     mkConfig: { type: String, required: true },
@@ -45,19 +16,19 @@ export default {
     mkEmptyLabel: { type: String, default: '全部' },
     // 未选择时的值
     mkEmptyValue: { type: String, default: '' },
-    // 未选择时，是否展示mkEmptyLabel、mkEmptyValue？
-    mkEmpty: { type: Boolean, default: false },
-    // 展示为按钮形态
-    mkIsButton: { type: Boolean, default: false },
 
     value: {
-      required: true,
-      type: [String, Boolean, Number]
+      type: [String, Number]
     },
-    size: { type: String },
-    textColor: { type: String, default: '#fff' },
-    fill: { type: String, default: '#409EFF' },
-    disabled: { type: Boolean, default: false }
+    type: String,
+    stretch: {
+      type: Boolean,
+      default: true
+    },
+    tabPosition: {
+      type: String,
+      default: 'top'
+    }
   },
   data() {
     return {
