@@ -5,10 +5,12 @@
     <el-tag v-else type="success"> 刚好是{{ mkLeLength }}个字 </el-tag>
     <el-form-item slot="reference" ref="item" :class="{ 'is-required': required }" :label="label" :label-width="realLabelWidth" :prop="prop" :rules="[{ validator: vil, trigger: mkTrigger }]" :error="error" :inline-message="inlineMessage" :show-message="showMessage" :size="size">
       <slot />
+      <slot name="label" slot="label"/>
     </el-form-item>
   </el-popover>
   <el-form-item v-else ref="item" :class="{ 'is-required': required }" :label="label" :label-width="realLabelWidth" :prop="prop" :rules="[{ validator: vil, trigger: mkTrigger }]" :error="error" :inline-message="inlineMessage" :show-message="showMessage" :size="size">
     <slot />
+    <slot name="label" slot="label"/>
   </el-form-item>
 </template>
 <script>

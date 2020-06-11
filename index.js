@@ -48,7 +48,7 @@ import MkBase_ from './lib/mixins/mk-base.js';
 
 const components = [Tag, MkBottomBox, MkButton, MkImgView, MkSearchBox, MkTable, MkSearchButtons, MkConfigSelect, MkHr, MkConfigRadio, MkCard, MkFormItem, MkInline, MkRow, MkTabs, MkAuth, MkLazyRender, MkDialog];
 
-const install = function(Vue, opts = {}) {
+const install = function (Vue, opts = {}) {
   components.forEach(component => {
     Vue.component(component.name, component);
   });

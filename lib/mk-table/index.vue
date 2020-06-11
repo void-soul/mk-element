@@ -1,94 +1,84 @@
 <template>
-  <div
-    ref="detailTable"
-    v-loading.lock="searching"
-    class="detail-table"
-    :style="{ height: boxHeight, width }"
-    element-loading-text="正在拼命加载"
-  >
-    <el-table
-      ref="table"
-      slot="table"
-      :class="{ 'mk-edit-table': mkEdit, 'mk-tree-table': mkTree }"
-      :data="list"
-      highlight-current-row
-      border
-      :stripe="stripe && !mkEdit"
-      :fit="mkfit"
-      width="auto"
-      :empty-text="displayemptyText"
-      :height="displayHeight"
-      :default-expand-all="defaultExpandAll"
-      :expand-row-keys="expandRowKeys"
-      :default-sort="defaultSort"
-      :show-summary="showSummary"
-      :sum-text="sumText"
-      :summary-method="summaryMethod"
-      :span-method="spanMethod"
-      :max-height="maxHeight"
-      :show-header="showHeader"
-      :row-class-name="rowClassName"
-      :row-style="rowStyle"
-      :cell-class-name="cellClassName"
-      :cell-style="cellStyle"
-      :header-row-class-name="headerRowClassName"
-      :header-row-style="headerRowStyle"
-      :header-cell-class-name="headerCellClassName"
-      :header-cell-style="headerCellStyle"
-      :row-key="rowKey"
-      :select-on-indeterminate="selectOnIndeterminate"
-      @select="_select"
-      @select-all="_selectAll"
-      @selection-change="_selectionChange"
-      @cell-mouse-enter="_cellMouseEnter"
-      @cell-mouse-leave="_cellMouseLeave"
-      @cell-click="_cellClick"
-      @cell-dblclick="_cellDblclick"
-      @row-click="_rowClick"
-      @row-contextmenu="_rowContextmenu"
-      @row-dblclick="_rowDblclick"
-      @header-click="_headerClick"
-      @header-contextmenu="_headerContextmenu"
-      @sort-change="_sortChange"
-      @filter-change="_filterChange"
-      @current-change="_currentChange"
-      @header-dragend="_headerDragend"
-      @expand-change="_expandChange"
-    >
-      <el-table-column
-        v-if="mkMultiple"
-        type="selection"
-        align="center"
-        width="40"
-      />
-      <el-table-column
-        v-if="mkIndex"
-        align="center"
-        type="index"
-        width="50"
-        :label="mkIndexLabel"
-      />
+  <div ref="detailTable"
+       v-loading.lock="searching"
+       class="detail-table"
+       :style="{ height: boxHeight, width }"
+       element-loading-text="正在拼命加载">
+    <el-table ref="table"
+              slot="table"
+              :class="{ 'mk-edit-table': mkEdit, 'mk-tree-table': mkTree }"
+              :data="list"
+              highlight-current-row
+              border
+              :stripe="stripe && !mkEdit"
+              :fit="mkfit"
+              width="auto"
+              :empty-text="displayemptyText"
+              :height="displayHeight"
+              :default-expand-all="defaultExpandAll"
+              :expand-row-keys="expandRowKeys"
+              :default-sort="defaultSort"
+              :show-summary="showSummary"
+              :sum-text="sumText"
+              :summary-method="summaryMethod"
+              :span-method="spanMethod"
+              :max-height="maxHeight"
+              :show-header="showHeader"
+              :row-class-name="rowClassName"
+              :row-style="rowStyle"
+              :cell-class-name="cellClassName"
+              :cell-style="cellStyle"
+              :header-row-class-name="headerRowClassName"
+              :header-row-style="headerRowStyle"
+              :header-cell-class-name="headerCellClassName"
+              :header-cell-style="headerCellStyle"
+              :row-key="rowKey"
+              :select-on-indeterminate="selectOnIndeterminate"
+              @select="_select"
+              @select-all="_selectAll"
+              @selection-change="_selectionChange"
+              @cell-mouse-enter="_cellMouseEnter"
+              @cell-mouse-leave="_cellMouseLeave"
+              @cell-click="_cellClick"
+              @cell-dblclick="_cellDblclick"
+              @row-click="_rowClick"
+              @row-contextmenu="_rowContextmenu"
+              @row-dblclick="_rowDblclick"
+              @header-click="_headerClick"
+              @header-contextmenu="_headerContextmenu"
+              @sort-change="_sortChange"
+              @filter-change="_filterChange"
+              @current-change="_currentChange"
+              @header-dragend="_headerDragend"
+              @expand-change="_expandChange">
+      <el-table-column v-if="mkMultiple"
+                       type="selection"
+                       align="center"
+                       width="40" />
+      <el-table-column v-if="mkIndex"
+                       align="center"
+                       type="index"
+                       width="50"
+                       :label="mkIndexLabel" />
       <slot name="before" />
       <slot />
       <div slot="append">
         <slot name="append" />
       </div>
     </el-table>
-    <el-pagination
-      v-if="mkPage && list.length > 0"
-      :page-sizes="pageSizes"
-      :layout="
+    <el-pagination v-if="mkPage && list.length > 0"
+                   :page-sizes="pageSizes"
+                   :layout="
         mkShowPageSize
           ? 'total, sizes, prev, pager, next'
           : 'total, prev, pager, next'
       "
-      :total="totalRow"
-      :pager-count="pagerCount"
-      :page-size="pageSize"
-      :current-page="currentPage"
-      @size-change="_pageSizeChange"
-      @current-change="_pageCurrentChange"
-    />
+                   :total="totalRow"
+                   :pager-count="pagerCount"
+                   :page-size="pageSize"
+                   :current-page="currentPage"
+                   @size-change="_pageSizeChange"
+                   @current-change="_pageCurrentChange" />
   </div>
 </template>
 <script>
@@ -166,7 +156,7 @@ export default {
     // 包含查询条件、查询中
     value: {
       type: Object,
-      validator: function(value) {
+      validator: function (value) {
         return (
           value &&
           value.hasOwnProperty('searching') &&
@@ -177,8 +167,8 @@ export default {
     // 缓存的id
     mkTableId: {
       type: String,
-      default() {
-        return `${+new Date()}${Math.random()}`;
+      default () {
+        return `${ +new Date() }${ Math.random() }`;
       }
     },
     // 是否启用缓存模式 默认true
@@ -266,7 +256,7 @@ export default {
     },
     pageSizes: {
       type: Array,
-      default() {
+      default () {
         return [15, 30, 50];
       }
     },
@@ -279,7 +269,7 @@ export default {
       default: 15
     }
   },
-  data() {
+  data () {
     return {
       // 本页数据
       list: [],
@@ -323,45 +313,45 @@ export default {
     };
   },
   computed: {
-    searching() {
+    searching () {
       return (
         (this.value && this.value.searching !== false) || this.mkLock === true
       );
     },
-    displayHeight() {
+    displayHeight () {
       const vl =
         this.height ||
         `${
-          process.browser === true
-            ? document.documentElement.clientHeight - this.top - this.mkTop
-            : 0
+        process.browser === true
+          ? document.documentElement.clientHeight - this.top - this.mkTop
+          : 0
         }`;
       const fix = this.mkPage ? 35 : 0;
       if (!isNaN(vl)) {
-        return `${vl - fix}px`;
+        return `${ vl - fix }px`;
       } else if (vl === 'auto') {
         return null;
       } else {
         return vl;
       }
     },
-    boxHeight() {
+    boxHeight () {
       const vl =
         this.height ||
         `${
-          process.browser === true
-            ? document.documentElement.clientHeight - this.top
-            : 0
+        process.browser === true
+          ? document.documentElement.clientHeight - this.top
+          : 0
         }`;
       if (!isNaN(vl)) {
-        return `${vl}px`;
+        return `${ vl }px`;
       } else if (vl === 'auto') {
         return null;
       } else {
         return vl;
       }
     },
-    displayemptyText() {
+    displayemptyText () {
       return (
         this.emptyText ||
         (this.loading !== false
@@ -369,20 +359,20 @@ export default {
           : '亲，没有找到符合条件的记录!')
       );
     },
-    skuSort() {
+    skuSort () {
       return this.mkSkuSort === true ? 'custom' : null;
     }
   },
   watch: {
     'value.searching': {
-      async handler(val, oldVal) {
+      async handler (val, oldVal) {
         if (val !== false) {
           await this._searchData(val);
         }
       }
     },
     data: {
-      handler(vl) {
+      handler (vl) {
         if (vl) {
           this._doSearch(true);
         }
@@ -390,7 +380,7 @@ export default {
       immediate: false
     },
     mkUri: {
-      handler(vl) {
+      handler (vl) {
         if (vl) {
           this.realUri = vl;
         }
@@ -398,7 +388,7 @@ export default {
       immediate: true
     },
     mkSelect: {
-      handler(vl) {
+      handler (vl) {
         if (vl) {
           this.selectedList = cloneDeep(vl);
         } else {
@@ -408,13 +398,13 @@ export default {
       immediate: true
     },
     fit: {
-      handler(vl) {
+      handler (vl) {
         this.mkfit = vl;
       },
       immediate: true
     },
     mkSqlCode: {
-      handler(vl) {
+      handler (vl) {
         if (vl) {
           if (this.mkMongo === false) {
             this.realUri = '/query.json';
@@ -426,7 +416,7 @@ export default {
       immediate: true
     }
   },
-  created() {
+  created () {
     if (this.defaultSort) {
       this.sortName = this.defaultSort.prop;
       this.sortType = this.defaultSort.order;
@@ -447,12 +437,12 @@ export default {
     ) {
       const fixRight = maxParent.querySelector('.el-table__fixed-right');
       if (fixRight) {
-        this.width = `${maxParent.clientWidth - fixRight.clientWidth - 50}px`;
+        this.width = `${ maxParent.clientWidth - fixRight.clientWidth - 50 }px`;
       }
     }
     // 读取缓存
     if (this.mkCache === true) {
-      const key = `${this.mkTableId}-xx`;
+      const key = `${ this.mkTableId }-xx`;
       const t = this.$cache.get(key);
       if (t) {
         if (this.value) {
@@ -462,9 +452,9 @@ export default {
             searching: this.value.searching
           });
         }
-        const pageSizeKey = `${this.mkTableId}-xxx`;
-        const currentPageKey = `${this.mkTableId}-xxxx`;
-        const totalRowKey = `${this.mkTableId}-xxxxx`;
+        const pageSizeKey = `${ this.mkTableId }-xxx`;
+        const currentPageKey = `${ this.mkTableId }-xxxx`;
+        const totalRowKey = `${ this.mkTableId }-xxxxx`;
         this.pageSize = this.$cache.get(pageSizeKey);
         this.currentPage = this.$cache.get(currentPageKey);
         this.totalRow = this.$cache.get(totalRowKey);
@@ -494,7 +484,7 @@ export default {
       this._singel = () => true;
     }
   },
-  mounted() {
+  mounted () {
     this.top = document.documentElement.clientHeight - 400;
     this.$nextTick(() => {
       // 重新计算表格的top
@@ -513,30 +503,31 @@ export default {
     });
   },
   methods: {
-    async _pageSizeChange(v) {
+    async _pageSizeChange (v) {
       this.pageSize = v;
       this.currentPage = 1;
       this.pageChange = true;
 
       this._doSearch(true);
     },
-    async _pageCurrentChange(v) {
+    async _pageCurrentChange (v) {
       this.currentPage = v;
       this.pageChange = true;
 
       this._doSearch(true);
     },
 
-    _pushSelected(item) {
+    _pushSelected (item) {
       this.selectedList.push(item);
+      this.$emit('selection-change-row', item, true);
     },
-    _select(selection, row) {
+    _select (selection, row) {
       this.$emit('select', selection, row);
     },
-    _selectAll(selection) {
+    _selectAll (selection) {
       this.$emit('select-all', selection);
     },
-    _selectionChange(selection) {
+    _selectionChange (selection) {
       if (this.lockSelectChange === false) {
         this.list.forEach((row) => {
           const selectedIndex = selection.findIndex((item) =>
@@ -548,6 +539,7 @@ export default {
           if (selectedIndex === -1) {
             if (index > -1) {
               this.selectedList.splice(index, 1);
+              this.$emit('selection-change-row', row, false);
             }
           } else if (index === -1) {
             this._pushSelected(row);
@@ -556,34 +548,34 @@ export default {
         this.$emit('selection-change', selection);
       }
     },
-    _cellMouseEnter(row, column, cell, event) {
+    _cellMouseEnter (row, column, cell, event) {
       this.$emit('cell-mouse-enter', row, column, cell, event);
     },
-    _cellMouseLeave(row, column, cell, event) {
+    _cellMouseLeave (row, column, cell, event) {
       this.$emit('cell-mouse-leave', row, column, cell, event);
     },
-    _cellClick(row, column, cell, event) {
+    _cellClick (row, column, cell, event) {
       this.$emit('cell-click', row, column, cell, event);
     },
-    _cellDblclick(row, column, cell, event) {
+    _cellDblclick (row, column, cell, event) {
       this.$emit('cell-dblclick', row, column, cell, event);
     },
-    _rowClick(row, event, column) {
+    _rowClick (row, event, column) {
       this.$emit('row-click', row, event, column);
     },
-    _rowContextmenu(row, event) {
+    _rowContextmenu (row, event) {
       this.$emit('row-contextmenu', row, event);
     },
-    _rowDblclick(row, event) {
+    _rowDblclick (row, event) {
       this.$emit('row-dblclick', row, event);
     },
-    _headerClick(column, event) {
+    _headerClick (column, event) {
       this.$emit('header-dblclick', column, event);
     },
-    _headerContextmenu(column, event) {
+    _headerContextmenu (column, event) {
       this.$emit('header-contextmenu', column, event);
     },
-    async _sortChange({ column, prop, order }) {
+    async _sortChange ({ column, prop, order }) {
       this.sortName = prop;
       this.sortType = order;
       if (this.sortType) {
@@ -597,10 +589,10 @@ export default {
 
       this._doSearch(true);
     },
-    _filterChange(filters) {
+    _filterChange (filters) {
       this.$emit('filter-change', filters);
     },
-    _currentChange(currentRow, oldCurrentRow) {
+    _currentChange (currentRow, oldCurrentRow) {
       if (this.lockSelectChange === false) {
         if (this.mkMultiple === false) {
           const index = this.selectedList.findIndex((item) =>
@@ -614,10 +606,10 @@ export default {
         this.$emit('current-change', currentRow, oldCurrentRow);
       }
     },
-    _headerDragend(newWidth, oldWidth, column, event) {
+    _headerDragend (newWidth, oldWidth, column, event) {
       this.$emit('header-dragend', newWidth, oldWidth, column, event);
     },
-    _expandChange(row, expandedRows) {
+    _expandChange (row, expandedRows) {
       const expanded =
         expandedRows.findIndex((item) => this._singel(item, row)) > -1;
       if (this.mkExpanOnlyone === true) {
@@ -633,14 +625,14 @@ export default {
       row.expanded = expanded;
       this.$emit('expand-change', row, expandedRows);
     },
-    _dataTransForm(list) {
+    _dataTransForm (list) {
       if (this.mkDataTransform) {
         list.forEach((item) => {
           this.mkDataTransform(item);
         });
       }
     },
-    _setList(data) {
+    _setList (data) {
       this.lockSelectChange = true;
       this._dataTransForm(data);
       this.list = data;
@@ -665,7 +657,7 @@ export default {
     /**
      * 为本地数据提供刷新方法
      */
-    _doSearch(searching) {
+    _doSearch (searching) {
       if (this.value) {
         this.$emit(
           'input',
@@ -677,11 +669,14 @@ export default {
         this._searchData(searching);
       }
     },
-    async _searchData(searching) {
+    async _searchData (searching) {
       this.loading = true;
       let searchData = {};
       // 是否是重置
       const reset = searching === null;
+      if (reset) {
+        this.clearSelection();
+      }
       if (this.value) {
         // v-modle 绑定时，改变值
         this.$emit('begin-fetch');
@@ -698,7 +693,7 @@ export default {
           this.$emptyIf(searchData);
           if (this.mkCache === true) {
             this.$cache.set({
-              [`${this.mkTableId}-xx`]: searchData
+              [`${ this.mkTableId }-xx`]: searchData
             });
           }
         }
@@ -725,8 +720,8 @@ export default {
       // 缓存页码、页量
       if (this.mkCache === true) {
         this.$cache.set({
-          [`${this.mkTableId}-xxx`]: this.pageSize,
-          [`${this.mkTableId}-xxxx`]: this.currentPage
+          [`${ this.mkTableId }-xxx`]: this.pageSize,
+          [`${ this.mkTableId }-xxxx`]: this.currentPage
         });
       }
       if (this.realUri) {
@@ -744,21 +739,19 @@ export default {
           if (filterData.totalRow !== undefined) {
             this.totalRow = filterData.totalRow;
             // bug 修正 因为查询条件变化引起总记录数>0但本页面记录为空时，重新请求一遍
-            // if (this.totalRow > 0 && filterData.list.length === 0) {
-            //   this.currentPage = Math.ceil(this.totalRow / this.pageSize);
-            //   this._searchData(true);
-            //   return;
-            // } else {
-            //   this._setList(filterData.list);
-            //   if (this.mkCache === true) {
-            //     this.$cache.set(`${this.mkTableId}-xxxxx`, this.totalRow);
-            //   }
-            // }
-            this._setList(filterData.list);
-            if (this.mkCache === true) {
-              this.$cache.set({
-                [`${this.mkTableId}-xxxxx`]: this.totalRow
-              });
+            if (this.totalRow > 0 && filterData.list.length === 0 && this.reloaded === false) {
+              this.currentPage = Math.ceil(this.totalRow / this.pageSize);
+              this.reloaded = true;
+              this._searchData(true);
+              return;
+            } else {
+              this.reloaded = false;
+              this._setList(filterData.list);
+              if (this.mkCache === true) {
+                this.$cache.set({
+                  [`${ this.mkTableId }-xxxxx`]: this.totalRow
+                });
+              }
             }
           } else if (filterData.list) {
             // 服务器返回、本地分页模式
@@ -794,7 +787,7 @@ export default {
       this.$emit('end-fetch');
       this.loading = false;
     },
-    _doLocalData(searchData) {
+    _doLocalData (searchData) {
       // 本地数据过滤
       if (this.mkFilter) {
         const list = [];
@@ -850,13 +843,13 @@ export default {
         }
         if (this.mkCache === true) {
           this.$cache.set({
-            [`${this.mkTableId}-xxxxx`]: this.totalRow
+            [`${ this.mkTableId }-xxxxx`]: this.totalRow
           });
         }
       }
     },
 
-    clearSelection() {
+    clearSelection () {
       this.selectedList.length = 0;
       this.$refs.table.clearSelection();
     },
@@ -865,7 +858,7 @@ export default {
      * flag = true 展开
      * flag = false 折叠
      */
-    expandChangeAll(flag) {
+    expandChangeAll (flag) {
       if (this.rowKey) {
         const list = this.getList();
         const expandRowKeys = [];
@@ -879,29 +872,29 @@ export default {
         this.expandFlag = flag;
       }
     },
-    toggleRowSelection(row, selected) {
+    toggleRowSelection (row, selected) {
       this.$refs.table.toggleRowSelection(row, selected);
     },
-    toggleRowExpansion(row, expanded) {
+    toggleRowExpansion (row, expanded) {
       this.$refs.table.toggleRowExpansion(row, expanded);
     },
-    setCurrentRow(row) {
+    setCurrentRow (row) {
       this.$refs.table.setCurrentRow(row);
     },
-    clearSort() {
+    clearSort () {
       this.$refs.table.clearSort();
     },
-    clearFilter() {
+    clearFilter () {
       this.$refs.table.clearFilter();
     },
-    doLayout() {
+    doLayout () {
       this.$refs.table.doLayout();
     },
     /**
      * 返回选中的全部数据
      * 必须先设置rowKey
      */
-    getSelectedList(clone) {
+    getSelectedList (clone) {
       if (clone === true) {
         return cloneDeep(this.selectedList);
       } else {
@@ -911,22 +904,22 @@ export default {
     /**
      * 本页全部数据
      */
-    getList() {
+    getList () {
       return cloneDeep(this.list);
     },
     /**
      * 假分页或者本地数据分页时,返回过滤后的全部数据
      */
-    getFilterList() {
+    getFilterList () {
       return cloneDeep(this.filterList);
     },
     /**
      * 假分页或者本地数据分页时，返回全部数据
      */
-    getAllList() {
+    getAllList () {
       return cloneDeep(this.data);
     },
-    reload() {
+    reload () {
       this._doSearch(true);
     }
   }
