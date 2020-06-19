@@ -59,7 +59,11 @@
                        align="center"
                        type="index"
                        width="50"
-                       :label="mkIndexLabel" />
+                       :label="mkIndexLabel">
+        <template slot-scope="{row, $index}">
+          {{currentPage | mathSub(1) | mathMul(pageSize) | mathAdd($index, 1)}}
+        </template>
+      </el-table-column>
       <slot name="before" />
       <slot />
       <div slot="append">
@@ -68,11 +72,7 @@
     </el-table>
     <el-pagination v-if="mkPage && list.length > 0"
                    :page-sizes="pageSizes"
-                   :layout="
-        mkShowPageSize
-          ? 'total, sizes, prev, pager, next'
-          : 'total, prev, pager, next'
-      "
+                   :layout="mkShowPageSize ? 'total, sizes, prev, pager, next' : 'total, prev, pager, next'"
                    :total="totalRow"
                    :pager-count="pagerCount"
                    :page-size="pageSize"
@@ -85,7 +85,6 @@
 import assign from 'lodash.assign';
 import cloneDeep from 'lodash.clonedeep';
 import { getValueByPath } from 'element-ui/lib/utils/util';
-
 export default {
   name: 'mk-table',
   props: {
@@ -124,6 +123,12 @@ export default {
     mkUri: {
       type: String
     },
+    // 远程导出数据的uri
+    // 返回数据可以是纯数组，此时意味着在客户端实现假分页或者干脆不分页
+    // 返回数据可以是{list,totalRow},此时意味着真分页
+    mkExcelUri: {
+      type: String
+    },
     // 远程加载数据的sqlCode
     // 不能与mkUri同时使用
     // 格式是sql目录中的文件名.sql语句
@@ -156,7 +161,7 @@ export default {
     // 包含查询条件、查询中
     value: {
       type: Object,
-      validator: function (value) {
+      validator (value) {
         return (
           value &&
           value.hasOwnProperty('searching') &&
@@ -299,6 +304,7 @@ export default {
       expandRow: null,
       // mkUri的代理
       realUri: null,
+      realExcelUri: null,
       // fit的代理
       mkfit: null,
       // data的代理
@@ -309,23 +315,17 @@ export default {
       // 是否是页码变化引起的刷新
       pageChange: false,
       // 加载中
-      loading: true
+      loading: true,
+      // 是否已经发生过一次：页码错误重新读取的情况?
+      reloaded: false
     };
   },
   computed: {
     searching () {
-      return (
-        (this.value && this.value.searching !== false) || this.mkLock === true
-      );
+      return ((this.value && this.value.searching !== false) || this.mkLock === true);
     },
     displayHeight () {
-      const vl =
-        this.height ||
-        `${
-        process.browser === true
-          ? document.documentElement.clientHeight - this.top - this.mkTop
-          : 0
-        }`;
+      const vl = this.height || `${ process.browser === true ? document.documentElement.clientHeight - this.top - this.mkTop : 0 }`;
       const fix = this.mkPage ? 35 : 0;
       if (!isNaN(vl)) {
         return `${ vl - fix }px`;
@@ -336,13 +336,7 @@ export default {
       }
     },
     boxHeight () {
-      const vl =
-        this.height ||
-        `${
-        process.browser === true
-          ? document.documentElement.clientHeight - this.top
-          : 0
-        }`;
+      const vl = this.height || `${ process.browser === true ? document.documentElement.clientHeight - this.top : 0 }`;
       if (!isNaN(vl)) {
         return `${ vl }px`;
       } else if (vl === 'auto') {
@@ -352,12 +346,7 @@ export default {
       }
     },
     displayemptyText () {
-      return (
-        this.emptyText ||
-        (this.loading !== false
-          ? '拼命加载中...'
-          : '亲，没有找到符合条件的记录!')
-      );
+      return (this.emptyText || (this.loading !== false ? '拼命加载中...' : '亲，没有找到符合条件的记录!'));
     },
     skuSort () {
       return this.mkSkuSort === true ? 'custom' : null;
@@ -387,6 +376,14 @@ export default {
       },
       immediate: true
     },
+    mkExcelUri: {
+      handler (vl) {
+        if (vl) {
+          this.realExcelUri = vl;
+        }
+      },
+      immediate: true
+    },
     mkSelect: {
       handler (vl) {
         if (vl) {
@@ -408,8 +405,10 @@ export default {
         if (vl) {
           if (this.mkMongo === false) {
             this.realUri = '/query.json';
+            this.realExcelUri = '/api/excel.xlsx';
           } else {
             this.realUri = '/query-mongo.json';
+            this.realExcelUri = '/api/excel-mongo.xlsx';
           }
         }
       },
@@ -433,7 +432,7 @@ export default {
     if (
       maxParent &&
       maxParent.className &&
-      maxParent.className.indexOf('el-table') > -1
+      maxParent.className.includes('el-table')
     ) {
       const fixRight = maxParent.querySelector('.el-table__fixed-right');
       if (fixRight) {
@@ -463,7 +462,7 @@ export default {
     // 页码修正
     if (this.mkPage === false && this.mkLimitSelf === false) {
       this.pageSize = null;
-      this.currentPage = null;
+      this.currentPage = 1;
     }
     // 行唯一标识符使用
     if (typeof this.rowKey === 'string') {
@@ -493,8 +492,8 @@ export default {
       }
       // v-model 模式下，只有searching=true，才请求数据
       if (this.value) {
-        if (this.value.searching) {
-          this._searchData(true);
+        if (this.value.searching === true || this.value.searching === null) {
+          this._searchData(this.value.searching);
         }
       } else {
         // 非v-modle模式下，直接请求数据
@@ -570,7 +569,7 @@ export default {
       this.$emit('row-dblclick', row, event);
     },
     _headerClick (column, event) {
-      this.$emit('header-dblclick', column, event);
+      this.$emit('header-click', column, event);
     },
     _headerContextmenu (column, event) {
       this.$emit('header-contextmenu', column, event);
@@ -657,7 +656,7 @@ export default {
     /**
      * 为本地数据提供刷新方法
      */
-    _doSearch (searching) {
+    _doSearch (searching, callback) {
       if (this.value) {
         this.$emit(
           'input',
@@ -666,14 +665,15 @@ export default {
           })
         );
       } else {
-        this._searchData(searching);
+        this._searchData(searching, callback);
       }
     },
-    async _searchData (searching) {
+    async _searchData (searching, callback) {
       this.loading = true;
       let searchData = {};
       // 是否是重置
       const reset = searching === null;
+      const allSearch = searching === undefined;
       if (reset) {
         this.clearSelection();
       }
@@ -684,7 +684,6 @@ export default {
         if (reset === true) {
           this.$empty(searchData);
         }
-
         this.$emit('input', {
           searchData,
           searching
@@ -709,7 +708,8 @@ export default {
         return;
       }
       // 重置时，页码、索引计数归1
-      if (reset === true || this.pageChange === false) {
+      // if (reset === true || this.pageChange === false) {
+      if (reset === true || allSearch === true) {
         this.currentPage = 1;
         this.index = 1;
       } else {
@@ -780,12 +780,52 @@ export default {
           searchData,
           searching: false
         });
+        if (callback) {
+          callback();
+        }
       });
       if (this.expandFlag !== null) {
         this.expandChangeAll(this.expandFlag);
       }
       this.$emit('end-fetch');
       this.loading = false;
+    },
+    excel (templateName, downLoadName) {
+      let searchData = {};
+      if (this.value) {
+        // v-modle 绑定时，改变值
+        searchData = cloneDeep(this.value.searchData);
+        if (searchData) {
+          this.$emptyIf(searchData);
+        }
+      }
+      if (this.mkInitSearchData) {
+        this.mkInitSearchData(searchData);
+      }
+      const urls = [this.realExcelUri];
+      if (this.realExcelUri.indexOf('?') === -1) {
+        urls.push('?templateName=');
+      } else {
+        urls.push('&templateName=');
+      }
+      urls.push(templateName);
+      urls.push('&downLoadName=');
+      urls.push(downLoadName);
+      urls.push('&sortName=');
+      urls.push(this.sortName);
+      urls.push('&sortType=');
+      urls.push(this.sortType);
+      urls.push('&sqlCode=');
+      urls.push(this.mkSqlCode);
+      urls.push('&devid=');
+      urls.push(this.$cache.get(this.$cache.keys.devid));
+      for (const k in searchData) {
+        urls.push('&');
+        urls.push(k);
+        urls.push('=');
+        urls.push(searchData[k]);
+      }
+      window.open(urls.join(''));
     },
     _doLocalData (searchData) {
       // 本地数据过滤
@@ -804,11 +844,12 @@ export default {
       this.totalRow = this.filterList.length;
       const maxPage = Math.ceil(this.totalRow / this.pageSize);
       // bug 修正 因为查询条件变化引起总记录数>0但本页面记录为空时，重新请求一遍
-      if (this.totalRow > 0 && maxPage < this.currentPage) {
+      if (this.totalRow > 0 && maxPage < this.currentPage && this.reloaded === false) {
         this.currentPage = maxPage;
-
+        this.reloaded = true;
         this._searchData(true);
       } else {
+        this.reloaded = false;
         // 排序
         if (this.sortName) {
           this.filterList.sort((a, b) => {
@@ -921,6 +962,16 @@ export default {
     },
     reload () {
       this._doSearch(true);
+    },
+    clearData () {
+      this.list = [];
+      this.selectedList = [];
+      this.filterList = [];
+      // this.list.length = 0;
+      // this.selectedList.length = 0;
+      // this.filterList.length = 0;
+      this.index = 1;
+      this.totalRow = 0;
     }
   }
 };
