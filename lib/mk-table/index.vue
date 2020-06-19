@@ -820,10 +820,19 @@ export default {
       urls.push('&devid=');
       urls.push(this.$cache.get(this.$cache.keys.devid));
       for (const k in searchData) {
-        urls.push('&');
-        urls.push(k);
-        urls.push('=');
-        urls.push(searchData[k]);
+        if (Object.prototype.toString.call(searchData[k]) === '[object Array]') {
+          for (const v of searchData[k]) {
+            urls.push('&');
+            urls.push(k);
+            urls.push('[]=');
+            urls.push(v);
+          }
+        } else {
+          urls.push('&');
+          urls.push(k);
+          urls.push('=');
+          urls.push(searchData[k]);
+        }
       }
       window.open(urls.join(''));
     },
