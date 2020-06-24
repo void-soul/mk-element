@@ -333,7 +333,6 @@
 </template>
 <script>
 import VueCropper from 'vue-cropper';
-import ResForm from './res-form';
 import { UploaderBuilder } from './qiniu4js';
 import Sortable from 'sortablejs';
 import 'viewerjs/dist/viewer.css';
@@ -687,8 +686,6 @@ export default {
               item.status !== 'success' &&
               vl.indexOf(item.url) === -1
           );
-          let fileName = [];
-          let count = 0;
           for (const url of vl) {
             if (url) {
               const key = this.$genViewKey(url);
@@ -705,11 +702,6 @@ export default {
                     url
                     // rsname: result
                   });
-                  // fileName.push({ fileName: result, url: url })
-                  count++;
-                  // if (vl.length === count) {
-                  //   this.$emit('getFileName', fileName)
-                  // }
                 }
               }
             }
@@ -745,8 +737,8 @@ export default {
       this.$viewer = viewer;
     },
     async loadtoken () {
-      let data = await this.$get('/web-files/up-token.json');
-      let type = this.type;
+      const data = await this.$get('/web-files/up-token.json');
+      const type = this.type;
       if (type === 'IMAGE' || type === 'IMAGEVIDEO') {
         this.realToken = data
           ? [data.token, 'pro', this.$store.state.fileFolder, ''].join('|')
@@ -1002,7 +994,7 @@ export default {
                 height: item.height
               });
             } else {
-              let cache = this.$cache.get(item.key);
+              const cache = this.$cache.get(item.key);
               if (cache) {
                 size.push(JSON.parse(cache));
               }
@@ -1036,10 +1028,10 @@ export default {
       });
       if (data && data.result > 0) {
         this.officePage = data.result;
-        let filepath = uri.substring(0, uri.length - 9) + '.files';
-        let tt = [];
+        const filepath = uri.substring(0, uri.length - 9) + '.files';
+        const tt = [];
         for (let i = 0; i < this.officePage; i++) {
-          let tem = {};
+          const tem = {};
           tem.fileurl = filepath + '/' + i + '.png?name=pro';
           tt.push(tem);
         }
@@ -1057,7 +1049,7 @@ export default {
     async getVideo (uri) {
       this.previewIng = true;
       this.preivewWidth = 800;
-      let data = await this.$get('/web-files/up-token.json');
+      const data = await this.$get('/web-files/up-token.json');
       this.preivewSrc = `${ uri }&token=${ data.token }`;
     },
     // 文件预览
@@ -1082,10 +1074,8 @@ export default {
         case 'GOMEZ':
         case 'IMAGE':
         case 'IMAGEVIDEO':
-          const img =
-            index !== undefined
-              ? this.$refs[`file-${ index }`]
-              : this.$refs[file.rsid];
+          // eslint-disable-next-line no-case-declarations
+          const img = index !== undefined ? this.$refs[`file-${ index }`] : this.$refs[file.rsid];
           if (img && img[0]) {
             this.preivewWidth = Math.max(img[0].naturalWidth, 1000);
           } else {
@@ -1184,7 +1174,7 @@ export default {
         if (lockid) {
           this.lockFolder = true;
         }
-        for (let item of fileFloders) {
+        for (const item of fileFloders) {
           if (item.cfid === lockid) {
             item.lock = true;
             this.chooseFolder = item;
@@ -1298,7 +1288,7 @@ export default {
     // 选择文件中新增文件夹保存
     async $chooseNewFolder (cancel) {
       if (cancel !== false) {
-        let inputValue = this.chooseNewFolder;
+        const inputValue = this.chooseNewFolder;
         if (inputValue) {
           if (inputValue.length > 16) {
             this.$message.error('长度不能超过16个字');
@@ -1306,7 +1296,7 @@ export default {
           }
           this.chooseNewFolderIng = true;
           try {
-            const id = await this.$post(`/cmResourceFolder/add.json`, {
+            const id = await this.$post('/cmResourceFolder/add.json', {
               cfname: inputValue,
               rstype: this.type
             });
@@ -1340,7 +1330,7 @@ export default {
     // 删除
     async $chooseDel (file) {
       this.chooseDelIng = true;
-      let data = await this.$delete('cmResource/deleteByid.json', {
+      const data = await this.$delete('cmResource/deleteByid.json', {
         rsid: file.rsid
       });
       if (data) {
@@ -1416,8 +1406,7 @@ export default {
     this.realToken = this.token;
   },
   components: {
-    VueCropper,
-    ResForm
+    VueCropper
   },
   provide () {
     return {

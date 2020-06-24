@@ -1,6 +1,10 @@
 <template>
-  <div v-loading="spinShow" element-loading-text="组件加载中..." element-loading-spinner="el-icon-loading">
-    <textarea :id="id" ref="area" v-model="value"></textarea>
+  <div v-loading="spinShow"
+       element-loading-text="组件加载中..."
+       element-loading-spinner="el-icon-loading">
+    <textarea :id="id"
+              ref="area"
+              v-model="value"></textarea>
   </div>
 </template>
 <script>
@@ -55,7 +59,7 @@ import 'tinymce/skins/lightgray/skin.min.css';
 
 export default {
   name: 'UE',
-  data() {
+  data () {
     return {
       editor: null,
       id: 'F' + Number(new Date()) + parseInt(Math.random() * 100, 10),
@@ -94,9 +98,9 @@ export default {
       default: null
     }
   },
-  mounted() {
+  mounted () {
     const options = {
-      selector: `#${this.id}`,
+      selector: `#${ this.id }`,
       skin: false,
       branding: false,
       elementpath: false,
@@ -154,11 +158,11 @@ export default {
     });
   },
   methods: {
-    setContent(content) {
+    setContent (content) {
       tinymce.get(this.id).setContent(content);
     }
   },
-  beforeDestroy() {
+  beforeDestroy () {
     tinymce.get(this.id).destroy(true);
   }
 };
