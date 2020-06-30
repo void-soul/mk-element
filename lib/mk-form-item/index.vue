@@ -1,16 +1,44 @@
 <template>
-  <el-popover v-if="mkTip" placement="top-start" width="210" trigger="click">
-    <el-tag v-if="mkLeLength > realLength" type="warning"> 还能输入{{ mkLeLength - realLength }}个字,最多{{ mkLeLength }}个字 </el-tag>
-    <el-tag v-else-if="mkLeLength < realLength" type="danger"> 多输了{{ realLength - mkLeLength }}个字,最多{{ mkLeLength }}个字 </el-tag>
-    <el-tag v-else type="success"> 刚好是{{ mkLeLength }}个字 </el-tag>
-    <el-form-item slot="reference" ref="item" :class="{ 'is-required': required }" :label="label" :label-width="realLabelWidth" :prop="prop" :rules="[{ validator: vil, trigger: mkTrigger }]" :error="error" :inline-message="inlineMessage" :show-message="showMessage" :size="size">
+  <el-popover v-if="mkTip"
+              placement="top-start"
+              width="210"
+              trigger="click">
+    <el-tag v-if="mkLeLength > realLength"
+            type="warning"> 还能输入{{ mkLeLength - realLength }}个字,最多{{ mkLeLength }}个字 </el-tag>
+    <el-tag v-else-if="mkLeLength < realLength"
+            type="danger"> 多输了{{ realLength - mkLeLength }}个字,最多{{ mkLeLength }}个字 </el-tag>
+    <el-tag v-else
+            type="success"> 刚好是{{ mkLeLength }}个字 </el-tag>
+    <el-form-item slot="reference"
+                  ref="item"
+                  :class="{ 'is-required': required }"
+                  :label="label"
+                  :label-width="realLabelWidth"
+                  :prop="prop"
+                  :rules="[{ validator: vil, trigger: mkTrigger }]"
+                  :error="error"
+                  :inline-message="inlineMessage"
+                  :show-message="showMessage"
+                  :size="size">
       <slot />
-      <slot name="label" slot="label"/>
+      <slot name="label"
+            slot="label" />
     </el-form-item>
   </el-popover>
-  <el-form-item v-else ref="item" :class="{ 'is-required': required }" :label="label" :label-width="realLabelWidth" :prop="prop" :rules="[{ validator: vil, trigger: mkTrigger }]" :error="error" :inline-message="inlineMessage" :show-message="showMessage" :size="size">
+  <el-form-item v-else
+                ref="item"
+                :class="{ 'is-required': required }"
+                :label="label"
+                :label-width="realLabelWidth"
+                :prop="prop"
+                :rules="[{ validator: vil, trigger: mkTrigger }]"
+                :error="error"
+                :inline-message="inlineMessage"
+                :show-message="showMessage"
+                :size="size">
     <slot />
-    <slot name="label" slot="label"/>
+    <slot name="label"
+          slot="label" />
   </el-form-item>
 </template>
 <script>
@@ -44,7 +72,7 @@ export default {
     mkType: {
       type: String,
       default: 'string',
-      validator(vl) {
+      validator (vl) {
         return types.indexOf(vl) > -1;
       }
     },
@@ -81,7 +109,7 @@ export default {
     // 内置正则
     mkInlay: {
       type: String,
-      validator(vl) {
+      validator (vl) {
         return inlays.indexOf(vl) > -1;
       }
     },
@@ -105,13 +133,13 @@ export default {
     mkTip: { type: Boolean, default: false }
   },
   computed: {
-    realLabel() {
+    realLabel () {
       return this.mkLabel || this.label || '';
     },
-    realLabelWidth() {
+    realLabelWidth () {
       return this.label ? this.labelWidth : '0';
     },
-    form() {
+    form () {
       let parent = this.$parent;
       let parentName = parent.$options.componentName;
       while (parentName !== 'ElForm') {
@@ -120,7 +148,7 @@ export default {
       }
       return parent;
     },
-    fieldValue() {
+    fieldValue () {
       const model = this.form.model;
       if (!model || !this.prop) {
         return;
@@ -133,12 +161,12 @@ export default {
 
       return getPropByPath(model, path, true).v;
     },
-    realLength() {
-      return `${this.fieldValue || ''}`.length;
+    realLength () {
+      return `${ this.fieldValue || '' }`.length;
     }
   },
   methods: {
-    async vil(rule, value, callback) {
+    async vil (rule, value, callback) {
       if (this.mkTarget !== undefined) {
         if (typeof this.mkTarget === 'function') {
           value = this.mkTarget();
