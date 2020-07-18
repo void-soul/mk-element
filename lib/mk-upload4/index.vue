@@ -760,7 +760,7 @@ export default {
     },
     // 解析key
     $genViewKey (uri) {
-      const arr = uri.match(/key=([0-9a-zA-Z.]+)/);
+      const arr = uri && uri.match(/key=([0-9a-zA-Z.]+)/);
       if (arr && arr.length === 2) {
         return arr[1];
       }

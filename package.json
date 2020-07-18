@@ -1,6 +1,6 @@
 {
   "name": "element-mk",
-  "version": "1.26.0",
+  "version": "1.26.5",
   "main": "index.js",
   "files": [
     "lib"

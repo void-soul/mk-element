@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import ClassicEditor from './lib/ckeditor.js';
+import ClassicEditor from './ckeditor.js';
 
 export default {
   name: 'UE',
@@ -61,6 +61,7 @@ export default {
             '|',
             'insertImage',
             'insertVideo',
+            'mediaEmbed',
             'link',
             '|',
             'insertTable',
@@ -116,6 +117,31 @@ export default {
             this.spinShow = false;
             this.progress = 0;
           }
+        },
+        mediaEmbed: {
+          previewsInData: true,
+          providers: [
+            {
+              name: 'qq',
+              url: /https:\/\/v\.qq\.com\/x\/cover\/[a-z0-9A-Z]+\/([0-9a-zA-Z]+)\.html/,
+              html: match => {
+                const id = match[1];
+                return (
+                  `<div style="height:498px;width:100%;text-align:center;"><iframe src="https://v.qq.com/txp/iframe/player.html?vid=${ id }" style="width: 510px; height: 100%;" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>`
+                );
+              }
+            },
+            {
+              name: 'youku',
+              url: /https:\/\/v\.youku\.com\/v_show\/id_([A-Z0-9a-z_=]+)\.html/,
+              html: match => {
+                const id = match[1];
+                return (
+                  `<div style="height:498px;width:100%;text-align:center;"><iframe src="https://player.youku.com/embed/${ id }" style="width: 510px; height: 100%;" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>`
+                );
+              }
+            }
+          ]
         }
       });
       this.$emit('loaded');
